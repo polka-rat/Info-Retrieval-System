@@ -1,9 +1,24 @@
 from util import *
 
 # Add your import statements here
-
+import math
 
 class Evaluation():
+
+	def _build_qrels_dict(self, qrels):
+		qrels_dict = {}
+		for item in qrels:
+			qid = int(item["query_num"])
+			docid = int(item["id"])
+			relevance = int(item["position"])
+			
+			if qid not in qrels_dict:
+				qrels_dict[qid] = []
+				
+			qrels_dict[qid].append([docid,relevance])
+			
+		
+		return qrels_dict
 
 	def queryPrecision(self, query_doc_IDs_ordered, query_id, true_doc_IDs, k):
 		"""
@@ -32,6 +47,13 @@ class Evaluation():
 
 		#Fill in code here
 
+		count =0
+		for i in range(min(k, len(query_doc_IDs_ordered))):
+			if query_doc_IDs_ordered[i] in true_doc_IDs :
+				count+=1
+		
+		precision = count/k if k > 0 else 0
+
 		return precision
 
 
@@ -43,6 +65,14 @@ class Evaluation():
 		meanPrecision = -1
 
 		#Fill in code here
+		n=len(query_ids)
+		precisionsum=0
+		qrels_dict = self._build_qrels_dict(qrels)
+		for i in range(n):
+			true_docs = [doc for doc, rel in qrels_dict.get(query_ids[i], []) if rel >= 1]
+			precisionsum+=self.queryPrecision(doc_IDs_ordered[i],query_ids[i],true_docs, k)
+		
+		meanPrecision=precisionsum/n
 
 		return meanPrecision
 
@@ -56,6 +86,14 @@ class Evaluation():
 
 		#Fill in code here
 
+		count =0
+		for i in range(min(k, len(query_doc_IDs_ordered))):
+			if query_doc_IDs_ordered[i] in true_doc_IDs :
+				count +=1
+		if len(true_doc_IDs) == 0:
+			return 0
+		
+		recall=count/(len(true_doc_IDs))
 		return recall
 
 
@@ -67,6 +105,14 @@ class Evaluation():
 		meanRecall = -1
 
 		#Fill in code here
+		n=len(query_ids)
+		recallsum=0
+		qrels_dict = self._build_qrels_dict(qrels)
+		for i in range(n):
+			true_docs = [doc for doc, rel in qrels_dict.get(query_ids[i], []) if rel >= 1]
+			recallsum+=self.queryRecall(doc_IDs_ordered[i],query_ids[i],true_docs,k)
+		
+		meanRecall=recallsum/n
 
 		return meanRecall
 
@@ -79,7 +125,12 @@ class Evaluation():
 		fscore = -1
 
 		#Fill in code here
-
+		precision=self.queryPrecision(query_doc_IDs_ordered,query_id,true_doc_IDs,k)
+		recall = self.queryRecall(query_doc_IDs_ordered,query_id,true_doc_IDs,k)
+		if precision + recall ==0 :
+			return 0
+		fscore = 1.25 / ((1/precision) + (0.25/recall))
+		
 		return fscore
 
 
@@ -91,11 +142,19 @@ class Evaluation():
 		meanFscore = -1
 
 		#Fill in code here
+		n=len(query_ids)
+		fscoresum=0
+		qrels_dict = self._build_qrels_dict(qrels)
+		for i in range(n):
+			true_docs = [doc for doc, rel in qrels_dict.get(query_ids[i], []) if rel >= 1]
+			fscoresum+=self.queryFscore(doc_IDs_ordered[i],query_ids[i], true_docs,k)
+		
+		meanFscore=fscoresum/n
 
 		return meanFscore
 	
 
-	def queryNDCG(self, query_doc_IDs_ordered, query_id, true_doc_IDs, k):
+	def queryNDCG(self, query_doc_IDs_ordered, query_id, qrels, k):
 		"""
 		Computation of nDCG of the Information Retrieval System
 		at given value of k for a single query
@@ -103,7 +162,25 @@ class Evaluation():
 		nDCG = -1
 
 		#Fill in code here
-
+		
+		qrels_dict = self._build_qrels_dict(qrels)
+		rel_order={}
+		for docid, rel in qrels_dict.get(query_id,[]) :
+			rel_order[docid]=rel
+		DCG =0.0
+		for i in range(min(k, len(query_doc_IDs_ordered))):
+			doc_id = query_doc_IDs_ordered[i]
+			relevance=rel_order.get(doc_id,0)
+			DCG += relevance / math.log2(i + 2)
+		
+		sorted_rel = sorted(rel_order.values(), reverse=True)
+        
+		IDCG = 0.0
+		for i in range(min(k, len(sorted_rel))):
+			IDCG +=  sorted_rel[i]/ math.log2(i + 2)
+		if IDCG == 0:
+			return 0
+		nDCG = DCG / IDCG
 		return nDCG
 
 
@@ -115,7 +192,14 @@ class Evaluation():
 		meanNDCG = -1
 
 		#Fill in code here
+		n = len(query_ids)
+		total = 0
+		qrels_dict = self._build_qrels_dict(qrels)
+		for i in range(n):
+			true_docs = [doc for doc, rel in qrels_dict.get(query_ids[i], []) if rel >= 1]
+			total += self.queryNDCG(doc_IDs_ordered[i], query_ids[i], qrels, k)
 
+		meanNDCG=total/n
 		return meanNDCG
 
 
@@ -129,6 +213,18 @@ class Evaluation():
 
 		#Fill in code here
 
+		count =0
+		precision_sum=[]
+		for i in range(min(k, len(query_doc_IDs_ordered))):
+			if query_doc_IDs_ordered[i] in true_doc_IDs :
+				count+=1
+				precision_sum.append(count/(i+1))
+		
+		if len(precision_sum)==0:
+			return 0
+		avgPrecision=sum(precision_sum)/len(precision_sum)
+		
+
 		return avgPrecision
 
 
@@ -140,6 +236,14 @@ class Evaluation():
 		meanAveragePrecision = -1
 
 		#Fill in code here
+		n=len(query_ids)
+		avgprecisionsum=0
+		qrels_dict = self._build_qrels_dict(q_rels)
+		for i in range(n):
+			true_docs = [doc for doc, rel in qrels_dict.get(query_ids[i], []) if rel >= 1]
+			avgprecisionsum+=self.queryAveragePrecision(doc_IDs_ordered[i],query_ids[i],true_docs,k)
+		
+		meanAveragePrecision=avgprecisionsum/n
 
 		return meanAveragePrecision
 
@@ -169,6 +273,12 @@ class Evaluation():
 		reciprocalRank = -1
 
 		#Fill in code here
+		for i in range(min(k, len(query_doc_IDs_ordered))) :
+			if query_doc_IDs_ordered[i] in true_doc_IDs:
+				reciprocalRank=1/(i+1)
+				break
+		else :
+			reciprocalRank=0
 
 		return reciprocalRank
 
@@ -198,5 +308,14 @@ class Evaluation():
 		meanReciprocalRank = -1
 
 		#Fill in code here
+		
+		n=len(query_ids)
+		reciprocalranksum=0
+		qrels_dict = self._build_qrels_dict(qrels)
+		for i in range(n):
+			true_docs = [doc for doc, rel in qrels_dict.get(query_ids[i], []) if rel >= 1]
+			reciprocalranksum+=self.queryReciprocalRank(doc_IDs_ordered[i],query_ids[i],true_docs,k)
+
+		meanReciprocalRank=reciprocalranksum/n
 
 		return meanReciprocalRank
