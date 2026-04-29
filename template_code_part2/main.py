@@ -37,7 +37,9 @@ class SearchEngine:
         self.inflectionReducer = InflectionReduction()
         self.stopwordRemover = StopwordRemoval()
 
-        self.informationRetriever = InformationRetrieval()
+        self.informationRetriever = InformationRetrieval(
+            retrieval_mode=self.args.retrieval_mode
+        )
         self.evaluator = Evaluation()
 
     def segmentSentences(self, text):
@@ -206,6 +208,12 @@ if __name__ == "__main__":
     parser.add_argument('-segmenter', default="punkt")
     parser.add_argument('-tokenizer', default="ptb")
     parser.add_argument('-custom', action="store_true")
+    parser.add_argument(
+        '-retrieval_mode',
+        default="wsd_tfidf",
+        choices=["tfidf", "wsd_tfidf", "lsa_synset", "bm25"],
+        help="Retrieval strategy to use for indexing and ranking"
+    )
 
     args = parser.parse_args()
 

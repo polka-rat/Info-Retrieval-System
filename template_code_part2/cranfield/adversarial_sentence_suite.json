@@ -1,0 +1,137 @@
+[
+  {
+    "id": 1,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Abbreviations",
+    "error_type": "abbreviation",
+    "gold_segments": 1,
+    "body": "Dr. Rao met Prof. Sen at 5 p.m. in St. Louis before boarding."
+  },
+  {
+    "id": 2,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Initials",
+    "error_type": "initials",
+    "gold_segments": 1,
+    "body": "The report was signed by A. B. Clark and filed on Tuesday."
+  },
+  {
+    "id": 3,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Organization Suffixes",
+    "error_type": "abbreviation",
+    "gold_segments": 1,
+    "body": "Acme Inc. acquired Beta Co. and announced layoffs immediately."
+  },
+  {
+    "id": 4,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Decimals",
+    "error_type": "decimal",
+    "gold_segments": 1,
+    "body": "The sensor rose from 3.14 to 3.14159 before stabilizing overnight."
+  },
+  {
+    "id": 5,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Version Numbers",
+    "error_type": "version-number",
+    "gold_segments": 1,
+    "body": "We deployed build v2.3.4 at 10.30 a.m. without downtime."
+  },
+  {
+    "id": 6,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Ellipsis",
+    "error_type": "ellipsis",
+    "gold_segments": 1,
+    "body": "I thought it was over... but the alarms started again."
+  },
+  {
+    "id": 7,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Quotes",
+    "error_type": "quote",
+    "gold_segments": 1,
+    "body": "She whispered, \"Run.\" and then froze at the doorway."
+  },
+  {
+    "id": 8,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Multiple Punctuation",
+    "error_type": "multiple-punctuation",
+    "gold_segments": 1,
+    "body": "You did what?! she texted, still staring at the invoice."
+  },
+  {
+    "id": 9,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "URLs",
+    "error_type": "url",
+    "gold_segments": 1,
+    "body": "Please review https://example.com/docs.v2 before tomorrow morning."
+  },
+  {
+    "id": 10,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Date Abbreviations",
+    "error_type": "abbreviation",
+    "gold_segments": 1,
+    "body": "The hearing is on Jan. 5, 2026, in the U.S. district court."
+  },
+  {
+    "id": 11,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Acronyms with Periods",
+    "error_type": "acronym",
+    "gold_segments": 1,
+    "body": "The U.N. envoy met the E.U. council in Brussels yesterday."
+  },
+  {
+    "id": 12,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Parenthetical Abbreviation",
+    "error_type": "parenthetical-abbreviation",
+    "gold_segments": 1,
+    "body": "The reagent (approx. 0.05 ml.) was added slowly to prevent foaming."
+  },
+  {
+    "id": 13,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Etc.",
+    "error_type": "abbreviation",
+    "gold_segments": 1,
+    "body": "Bring eggs, milk, etc. and bread before 6 p.m. please."
+  },
+  {
+    "id": 14,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Address Abbreviations",
+    "error_type": "abbreviation",
+    "gold_segments": 1,
+    "body": "He lives on No. 12, Baker St., near the old mill by the river."
+  },
+  {
+    "id": 15,
+    "author": "adversarial_suite",
+    "bibliography": "synthetic test case",
+    "title": "Quote + Ellipsis",
+    "error_type": "quote-ellipsis",
+    "gold_segments": 1,
+    "body": "Did she really say, \"Wait... now!\" before exiting the room?"
+  }
+]
