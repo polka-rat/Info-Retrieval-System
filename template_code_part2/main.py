@@ -3,12 +3,21 @@ from tokenization import Tokenization
 from inflectionReduction import InflectionReduction
 from stopwordRemoval import StopwordRemoval
 from informationRetrieval import InformationRetrieval
-from evaluation import Evaluation
+# from info_retrieval_SDM import InformationRetrieval
+# from info_retreieval_SDMLSA import InformationRetrieval
+# from info_retreieval_ngram import InformationRetrieval
+# from info_retreieval_LSA import InformationRetrieval
+# from info_retreivalWord2vec import InformationRetrieval
+# from info_retreieval_ngramBoG import InformationRetrieval
+from util import load_nfcorpus_as_cranfield
 
+
+from evaluation import Evaluation
+import matplotlib.pyplot as plt
+import time
 from sys import version_info
 import argparse
 import json
-import matplotlib.pyplot as plt
 import os
 
 # Input compatibility for Python 2 and Python 3
@@ -90,54 +99,61 @@ class SearchEngine:
         return stopwordRemovedQueries
 
     def preprocessDocs(self, docs):
-        segmentedDocs = []
-        for doc in docs:
-            segmentedDoc = self.segmentSentences(doc)
-            segmentedDocs.append(segmentedDoc)
+        cache_path = os.path.join(self.args.out_folder, "pre_processed_docs.json")
 
+        if os.path.exists(cache_path):
+            print("Loading preprocessed documents from cache...")
+            with open(cache_path, "r") as f:
+                return json.load(f)
+
+        print("No cache found. Running preprocessing pipeline...")
+
+        start = time.time()
+
+        segmentedDocs = [self.segmentSentences(doc) for doc in docs]
         json.dump(segmentedDocs, open(os.path.join(self.args.out_folder, "segmented_docs.txt"), 'w'))
 
-        tokenizedDocs = []
-        for doc in segmentedDocs:
-            tokenizedDoc = self.tokenize(doc)
-            tokenizedDocs.append(tokenizedDoc)
-
+        tokenizedDocs = [self.tokenize(doc) for doc in segmentedDocs]
         json.dump(tokenizedDocs, open(os.path.join(self.args.out_folder, "tokenized_docs.txt"), 'w'))
 
-        reducedDocs = []
-        for doc in tokenizedDocs:
-            reducedDoc = self.reduceInflection(doc)
-            reducedDocs.append(reducedDoc)
-
+        reducedDocs = [self.reduceInflection(doc) for doc in tokenizedDocs]
         json.dump(reducedDocs, open(os.path.join(self.args.out_folder, "reduced_docs.txt"), 'w'))
 
-        stopwordRemovedDocs = []
-        for doc in reducedDocs:
-            stopwordRemovedDoc = self.removeStopwords(doc)
-            stopwordRemovedDocs.append(stopwordRemovedDoc)
-
+        stopwordRemovedDocs = [self.removeStopwords(doc) for doc in reducedDocs]
         json.dump(stopwordRemovedDocs, open(os.path.join(self.args.out_folder, "stopword_removed_docs.txt"), 'w'))
+
+        # ---- 3. Save final cache ----
+        with open(cache_path, "w") as f:
+            json.dump(stopwordRemovedDocs, f)
+
+        end = time.time()
+        print(f"Preprocessing time for documents: {end - start:.2f} seconds")
 
         return stopwordRemovedDocs
 
     def evaluateDataset(self):
 
-        queries_json = json.load(open(os.path.join(args.dataset, "cran_queries.json"), 'r'))[:]
+        # queries_json = json.load(open(os.path.join(args.dataset, "cran_queries.json"), 'r'))[:]
+        # query_ids = [item["query number"] for item in queries_json]
+        # queries = [item["query"] for item in queries_json]
+
+        # processedQueries = self.preprocessQueries(queries)
+
+        # docs_json = json.load(open(os.path.join(args.dataset, "cran_docs.json"), 'r'))[:]
+        # doc_ids = [item["id"] for item in docs_json]
+        # docs = [item["body"] for item in docs_json]
+
+        queries_json, docs_json, qrels = load_nfcorpus_as_cranfield(args.dataset)
         query_ids = [item["query number"] for item in queries_json]
         queries = [item["query"] for item in queries_json]
-
-        processedQueries = self.preprocessQueries(queries)
-
-        docs_json = json.load(open(os.path.join(args.dataset, "cran_docs.json"), 'r'))[:]
         doc_ids = [item["id"] for item in docs_json]
         docs = [item["body"] for item in docs_json]
-
         processedDocs = self.preprocessDocs(docs)
+        processedQueries = self.preprocessQueries(queries)
 
         self.informationRetriever.buildIndex(processedDocs, doc_ids)
         doc_IDs_ordered = self.informationRetriever.rank(processedQueries)
 
-        qrels = json.load(open(os.path.join(args.dataset, "cran_qrels.json"), 'r'))[:]
 
         precisions, recalls, fscores, MAPs, nDCGs, MRRs = [], [], [], [], [], []
 
@@ -201,7 +217,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='main.py')
 
-    parser.add_argument('-dataset', default="cranfield/")
+    parser.add_argument('-dataset', default=r"C:\Users\Nagasai\OneDrive\Desktop\Acads\Sem 6\CS6370\Project\nfcorpus")
     parser.add_argument('-out_folder', default="output/")
     parser.add_argument('-segmenter', default="punkt")
     parser.add_argument('-tokenizer', default="ptb")
