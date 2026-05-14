@@ -1,1 +1,13 @@
 \section{Discussion}\label{sec:discuss}
+
+Several broad conclusions emerge when the different methods are compared together.
+
+First, the Cranfield dataset rewards exact lexical matching more than many modern open-domain collections do. Because the corpus consists of technical aeronautical abstracts with relatively standardized terminology, classical lexical methods already perform strongly. This explains why the baseline TF-IDF system remains competitive and why BM25+ produces one of the clearest improvements.
+
+Second, semantic abstraction is not automatically beneficial. LSA improves some retrieval characteristics, especially recall-oriented behavior, but its dimensionality reduction can also blur distinctions between technically different documents. The LSA-synset hybrid goes one step further semantically, but WordNet-style sense inventories do not align perfectly with domain-specific engineering language.
+
+Third, data scale matters heavily. Both the custom Word2Vec approach and the learned ranking variants are constrained by the modest size of Cranfield. Neural and supervised methods generally benefit from much larger corpora or much richer relevance supervision than what is available here.
+
+Fourth, the strongest overall improvements came from methods that refined lexical ranking rather than replacing it. Statistical Language Modeling with Dirichlet smoothing and BM25+ both preserved core lexical evidence while addressing weaknesses in raw TF-IDF scoring such as sparsity and document length effects.
+
+Finally, the zero-shot reranking experiment highlights an important practical lesson: a model that is powerful in general web retrieval settings may not transfer cleanly to a specialized technical collection without domain adaptation.

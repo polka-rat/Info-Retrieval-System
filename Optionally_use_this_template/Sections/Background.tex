@@ -1,1 +1,56 @@
 \section{Background}\label{sec:background}
+
+\subsection{Part 4: Analysis}
+\subsubsection{Limitations of the Vector Space Model}
+The vector space model represents documents and queries as vectors in a multi-dimensional space. This is effective for basic retrieval but has a lot of theoretical and practical limitations. In the basic vector space models the terms are considered as the dimensions and the weights in each dimension are given by TF-IDF values. This can lead to the following problems:
+\begin{enumerate}
+    \item \textbf{Synonymy}: Since VSM relies on exact word matches, it treats different words with the same meaning as an entirely distinct dimension. For example, a query involving aircraft will be very different from a query involving airplane since they are different terms. This can lead to false negatives.
+    \item \textbf{Polysemy}: VSM cannot distinguish between different meanings of the same word. This can lead to false positives, unnecessarily retrieving irrelevant documents.
+    \item \textbf{Independence Assumption}: VSM assumes terms are independent of one another. Ideally the relation between terms should also be modelled.
+    \item \textbf{Ignoring Word Order and Context}: VSM ignores word order, complex phrases and the context in which a word appears. For example, stress on wings and wings under stress should be different things but are treated as the same thing.
+    \item \textbf{Lack of Semantic Understanding}: VSM does not capture the meaning of the documents or queries. No underlying concepts are captured.
+\end{enumerate}
+
+\subsubsection{Examples from the Cranfield Dataset}
+The following examples from the Cranfield collection demonstrate how the theoretical shortcomings of the VSM can be seen in actual retrieval:
+
+\begin{itemize}
+    \item \textbf{Synonymy}: ``Experimental investigation of the pressure distribution on an aerofoil''.
+    This illustrates a failure to capture synonyms. A query using \textit{airfoil} would fail to match this document, creating a false negative because the terms are mapped to distinct dimensions.
+
+    \item \textbf{Polysemy}: ``The effect of the pitch of the propeller on performance''.
+    This sentence shows the risk of false positives. A query for \textit{aircraft pitch} (referring to stability) would incorrectly retrieve this document because VSM cannot distinguish between propeller geometry and longitudinal rotation.
+
+    \item \textbf{Independence Assumption}: ``The study of boundary layer transition''.
+    The system treats \textit{boundary} and \textit{layer} as independent tokens. This allows irrelevant documents discussing geological boundaries or atmospheric layers to achieve high similarity scores.
+
+    \item \textbf{Word Order}: VSM cannot differentiate the sentence ``Interference effects of the wing on the body'' from ``Interference effects of the body on the wing.'' Both yield identical vectors, ignoring the specific aerodynamic context of which component influences the other.
+
+    \item \textbf{Semantic Understanding}: ``The analysis of thermal stress in structures''.
+    This would not be retrieved by a query for \textit{heat-induced deformation}. Since there is no keyword overlap, the system fails to bridge the semantic gap between the physical cause (heat) and the resulting effect (thermal stress).
+\end{itemize}
+
+\subsection*{4.2 The Zero-Result Problem (OOV Issue)}
+\textbf{What happens when a query contains a word that does not appear in the document vocabulary (Out-of-Vocabulary term)?}
+\begin{itemize}
+    \item In VSM, the vocabulary is predefined by the unique terms indexed from the document during preprocessing. When an Out-of-Vocabulary term is encountered in a query, it has no corresponding entry in the inverted index.
+    \item The system cannot compute a Term Frequency (TF) or Inverse Document Frequency (IDF) for that term. In the resulting query vector $\mathbf{q}$, the dimension corresponding to the OOV term is assigned a weight of zero.
+\end{itemize}
+
+\textbf{How does this affect retrieval results in your system?}
+\begin{itemize}
+    \item \textbf{Partial Match:} If the query consists of both known and OOV terms, the OOV components are ignored. The cosine similarity is calculated using only the known terms, which may lead to a loss of query specificity.
+    \item \textbf{The Zero-Result Problem:} If all terms in a query are OOV, the entire query vector $\mathbf{q}$ becomes a zero vector ($\mathbf{0}$).
+    \item Mathematically, the cosine similarity between any document vector $\mathbf{d}$ and the query vector $\mathbf{q}$ becomes zero:
+    \[
+    \text{Cosine Similarity} = \frac{\mathbf{d} \cdot \mathbf{q}}{\|\mathbf{d}\| \|\mathbf{q}\|} = \frac{\mathbf{d} \cdot \mathbf{0}}{\|\mathbf{d}\| \cdot 0} \rightarrow 0
+    \]
+    \item As a result, the system fails to retrieve any documents, even if relevant content exists within the corpus under different variations or synonyms.
+\end{itemize}
+
+\textbf{Example query demonstrating this issue:}
+\begin{itemize}
+    \item The Cranfield dataset consists of aeronautics research mainly from the 1960s.
+    \item Queries: ``Effect of \textbf{nanoscale} coatings on \textbf{composite} wing durability.'' or ``Using \textbf{GPU} acceleration for real-time flight \textbf{simulations}.''
+    \item Explanation: While the term ``wing'' is likely in the vocabulary, modern technical terms like \textbf{nanoscale}, \textbf{GPU}, or specific contexts for \textbf{composite} materials may be OOV for this dataset. If these key constraints are OOV, the system will either retrieve general wing or flight documents while ignoring the specific research intent, or return no meaningful results at all.
+\end{itemize}

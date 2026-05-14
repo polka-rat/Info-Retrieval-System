@@ -2,6 +2,7 @@ from sentenceSegmentation import SentenceSegmentation
 from tokenization import Tokenization
 from inflectionReduction import InflectionReduction
 from stopwordRemoval import StopwordRemoval
+
 from evaluation import Evaluation
 import matplotlib.pyplot as plt
 import time
@@ -10,7 +11,6 @@ from sys import version_info
 import argparse
 import json
 import os
-from importlib import import_module
 
 # Input compatibility for Python 2 and Python 3
 if version_info.major == 3:
@@ -37,54 +37,8 @@ class SearchEngine:
         self.inflectionReducer = InflectionReduction()
         self.stopwordRemover = StopwordRemoval()
 
-        self.informationRetriever = self.createInformationRetriever()
+        self.informationRetriever = InformationRetrieval()
         self.evaluator = Evaluation()
-
-    def createInformationRetriever(self):
-        retriever_configs = {
-            "ngram": {
-                "module": "info_retreieval_ngram",
-                "kwargs": {"n": self.args.ngram_n},
-            },
-            "bm25": {
-                "module": "info_retrieval_bm_25",
-                "kwargs": {"retrieval_mode": "bm25"},
-            },
-            "lsa": {
-                "module": "info_retreieval_LSA",
-                "kwargs": {"k": self.args.lsa_k},
-            },
-            "lsa_synset": {
-                "module": "info_retrieval_lsa_synset",
-                "kwargs": {"k": self.args.lsa_k},
-            },
-            "sdmlsa": {
-                "module": "info_retreieval_SDMLSA_hybrid",
-                "kwargs": {"k": self.args.sdmlsa_k},
-            },
-            "sentence_wise": {
-                "module": "info_retrieval_sentence_wise_centeroids",
-                "kwargs": {
-                    "vector_size": self.args.vector_size,
-                    "embedding_path": self.args.embedding_path,
-                    "pretrained_path": self.args.pretrained_path,
-                    "use_pretrained": self.args.use_pretrained,
-                    "train_if_missing": self.args.train_if_missing,
-                    "temperature": self.args.temperature,
-                    "window": self.args.window,
-                    "min_count": self.args.min_count,
-                    "workers": self.args.workers,
-                },
-            },
-        }
-
-        config = retriever_configs[self.args.retriever]
-        module = import_module(config["module"])
-        retriever_class = getattr(module, "InformationRetrieval")
-        retriever = retriever_class(**config["kwargs"])
-        if self.args.retriever == "sdmlsa":
-            retriever.context_length = self.args.sdmlsa_context_length
-        return retriever
 
     def segmentSentences(self, text):
         if self.args.segmenter == "naive":
@@ -206,29 +160,22 @@ class SearchEngine:
 
     def evaluateDataset(self):
 
-        queries_json = json.load(open(os.path.join(self.args.dataset, "cran_queries.json"), 'r'))[:]
+        queries_json = json.load(open(os.path.join(args.dataset, "cran_queries.json"), 'r'))[:]
         query_ids = [item["query number"] for item in queries_json]
         queries = [item["query"] for item in queries_json]
 
         processedQueries = self.preprocessQueries(queries)
 
-        docs_json = json.load(open(os.path.join(self.args.dataset, "cran_docs.json"), 'r'))[:]
+        docs_json = json.load(open(os.path.join(args.dataset, "cran_docs.json"), 'r'))[:]
         doc_ids = [item["id"] for item in docs_json]
         docs = [item["body"] for item in docs_json]
 
         processedDocs = self.preprocessDocs(docs)
 
-        if self.args.retriever == "sdmlsa":
-            self.informationRetriever.buildIndex(
-                processedDocs,
-                doc_ids,
-                context_length=self.args.sdmlsa_context_length
-            )
-        else:
-            self.informationRetriever.buildIndex(processedDocs, doc_ids)
+        self.informationRetriever.buildIndex(processedDocs, doc_ids)
         doc_IDs_ordered = self.informationRetriever.rank(processedQueries)
 
-        qrels = json.load(open(os.path.join(self.args.dataset, "cran_qrels.json"), 'r'))[:]
+        qrels = json.load(open(os.path.join(args.dataset, "cran_qrels.json"), 'r'))[:]
 
         precisions, recalls, fscores, MAPs, nDCGs, MRRs = [], [], [], [], [], []
          
@@ -263,10 +210,10 @@ class SearchEngine:
         plt.plot(range(1, self.rank_till + 1), MRRs, label="MRR")
 
         plt.legend()
-        method_name = self.args.retriever.replace("_", " ").title()
+        method_name = args.retriever.replace("_", " ").title()
         plt.title(f"Evaluation Metrics - Cranfield Dataset ({method_name})")
         plt.xlabel("k")
-        plt.savefig(os.path.join(self.args.out_folder, "eval_plot.png"))
+        plt.savefig(os.path.join(args.out_folder, "eval_plot.png"))
 
     def handleCustomQuery(self):
 
@@ -275,20 +222,13 @@ class SearchEngine:
 
         processedQuery = self.preprocessQueries([query])[0]
 
-        docs_json = json.load(open(os.path.join(self.args.dataset, "cran_docs.json"), 'r'))[:]
+        docs_json = json.load(open(os.path.join(args.dataset, "cran_docs.json"), 'r'))[:]
         doc_ids = [item["id"] for item in docs_json]
         docs = [item["body"] for item in docs_json]
 
         processedDocs = self.preprocessDocs(docs)
 
-        if self.args.retriever == "sdmlsa":
-            self.informationRetriever.buildIndex(
-                processedDocs,
-                doc_ids,
-                context_length=self.args.sdmlsa_context_length
-            )
-        else:
-            self.informationRetriever.buildIndex(processedDocs, doc_ids)
+        self.informationRetriever.buildIndex(processedDocs, doc_ids)
         doc_IDs_ordered = self.informationRetriever.rank([processedQuery])[0]
 
         print("\nTop five document IDs : ")
@@ -300,31 +240,11 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='main.py')
 
-    parser.add_argument('-dataset', default="cranfield")
+    parser.add_argument('-dataset', default=r"C:\Users\Nagasai\OneDrive\Desktop\Acads\Sem 6\CS6370\NLP_Project\NLP Assignemnet\cranfield")
     parser.add_argument('-out_folder', default="output/")
     parser.add_argument('-segmenter', default="punkt")
     parser.add_argument('-tokenizer', default="ptb")
     parser.add_argument('-custom', action="store_true")
-    parser.add_argument(
-        '-retriever',
-        default="bm25",
-        choices=["ngram", "bm25", "lsa", "lsa_synset", "sdmlsa", "sentence_wise"]
-    )
-    parser.add_argument('-ngram_n', type=int, default=2)
-    parser.add_argument('-lsa_k', type=int, default=100)
-    parser.add_argument('-sdmlsa_k', type=int, default=100)
-    parser.add_argument('-sdmlsa_context_length', type=int, default=1)
-    parser.add_argument('-vector_size', type=int, default=100)
-    parser.add_argument('-embedding_path', default=None)
-    parser.add_argument('-pretrained_path', default=None)
-    parser.add_argument('-use_pretrained', action="store_true")
-    parser.add_argument('-train_if_missing', dest="train_if_missing", action="store_true")
-    parser.add_argument('-no_train_if_missing', dest="train_if_missing", action="store_false")
-    parser.set_defaults(train_if_missing=True)
-    parser.add_argument('-temperature', type=float, default=8.0)
-    parser.add_argument('-window', type=int, default=5)
-    parser.add_argument('-min_count', type=int, default=1)
-    parser.add_argument('-workers', type=int, default=None)
 
     args = parser.parse_args()
 

@@ -1,1 +1,112 @@
 \section{Introduction}\label{sec:intro}
+
+This report preserves the full assignment flow while adapting it to the LLNCS template used by \texttt{Main.tex}. We begin with the manual retrieval example from Part 1 before moving into the implemented system, evaluation, analysis, and project extensions.
+
+\subsection{Part 1: Manual Retrieval Example}
+Given Documents in the dataset:
+\begin{enumerate}
+    \item d1: The star in our solar system provides heat and light.
+    \item d2: That Hollywood star walked the red carpet for the movie premiere.
+    \item d3: Astronomers observe distant stars and galaxies using telescopes.
+\end{enumerate}
+
+\subsection{Preprocessing and Inverted Index}
+\subsubsection{Tokenization}
+Output after performing tokenization on the documents:
+\begin{enumerate}
+    \item d1: [The, star, in, our, solar, system, provides, heat, and, light, .]
+    \item d2: [That, Hollywood, star, walked, the, red, carpet, for, the, movie, premiere, .]
+    \item d3: [Astronomers, observe, distant, stars, and, galaxies, using, telescopes, .]
+\end{enumerate}
+
+\subsubsection{Stop Word Removal}
+Output after removing stop words from the documents:
+\begin{enumerate}
+    \item d1: [star, solar, system, provides, heat, light, .]
+    \item d2: [Hollywood, star, walked, red, carpet, movie, premiere, .]
+    \item d3: [Astronomers, observe, distant, stars, galaxies, using, telescopes, .]
+\end{enumerate}
+
+\subsubsection{Inverted Index}
+\begin{enumerate}
+    \item star: d1, d2, d3 (lil doubt)
+    \item solar: d1
+    \item system: d1
+    \item provides: d1
+    \item heat: d1
+    \item light: d1
+    \item Hollywood: d2
+    \item walked: d2
+    \item red: d2
+    \item carpet: d2
+    \item movie: d2
+    \item premiere: d2
+    \item Astronomers: d3
+    \item observe: d3
+    \item distant: d3
+    \item galaxies: d3
+    \item using: d3
+    \item telescopes: d3
+\end{enumerate}
+
+\subsection{TF-IDF Document Matrix}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|c|ccc|c|c|c|c|ccc|}
+\hline
+\multirow{2}{*}{Term} & \multirow{2}{*}{Q} & \multicolumn{3}{c|}{Counts ($tf_i$)} & \multirow{2}{*}{$df_i$} & \multirow{2}{*}{$D/df_i$} & \multirow{2}{*}{$IDF_i$} & \multicolumn{4}{c|}{Weights ($w_i = tf_i \cdot IDF_i$)} \\
+\cline{3-5} \cline{9-12}
+ &  & $D_1$ & $D_2$ & $D_3$ &  &  &  & Q & $D_1$ & $D_2$ & $D_3$ \\
+\hline
+star         & 1 & 1 & 1 & 1 & 3 & 1   & 0      & 0      & 0      & 0      & 0 \\
+solar        & 0 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0      & 0.4771 & 0      & 0 \\
+system       & 0 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0      & 0.4771 & 0      & 0 \\
+provides     & 0 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0      & 0.4771 & 0      & 0 \\
+heat         & 0 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0      & 0.4771 & 0      & 0 \\
+light        & 1 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0.4771 & 0.4771 & 0      & 0 \\
+Hollywood    & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0      & 0.4771 & 0 \\
+walked       & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0      & 0.4771 & 0 \\
+red          & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0      & 0.4771 & 0 \\
+carpet       & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0      & 0.4771 & 0 \\
+movie        & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0      & 0.4771 & 0 \\
+premiere     & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0      & 0.4771 & 0 \\
+Astronomers  & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0      & 0      & 0      & 0.4771 \\
+observe      & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0      & 0      & 0      & 0.4771 \\
+distant      & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0      & 0      & 0      & 0.4771 \\
+galaxies     & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0      & 0      & 0      & 0.4771 \\
+using        & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0      & 0      & 0      & 0.4771 \\
+telescopes   & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0      & 0      & 0      & 0.4771 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Boolean Retrieval}
+Inverted index of star $\rightarrow$ [d1,d2,d3] and for light $\rightarrow$ [d1]. \\
+Only document d1 is common in both so that document is retrieved.
+
+\subsection{Cosine Similarity and Ranking}
+\begin{enumerate}
+    \item $|Q|=0.4771$
+    \item $|d1|=5*\sqrt{(0.4771)^2}=5*0.4771=2.3855$
+    \item $|d2|=6*\sqrt{(0.4771)^2}=2.8626$
+    \item $|d3|=6*\sqrt{(0.4771)^2}=2.8626$
+    \item $cos\theta_{d1}=\frac{Q.d1}{|Q||d1|}=\frac{04771*0.4771}{0.4771*5*0.4771}=0.2$
+    \item $cos\theta_{d2}=\frac{Q.d2}{|Q||d2|}=0$
+    \item $cos\theta_{d3}=\frac{Q.d3}{|Q||d3|}=0$
+\end{enumerate}
+
+\begin{itemize}
+    \item Final Ranking is $d1>d2=d3$
+    \item Yes, Ranking is desirable as d1 would have been the most likely document we would have been searching for, given the query.
+\end{itemize}
+
+\subsection{Analysis of Word Sense Ambiguity}
+\begin{enumerate}
+    \item In the query ``movie star'', ``star'' appears in all the documents so the query reduces to movie alone. The word ``movie'' appears only in document d2, so ideally, only d2 should be retrieved.
+    \item Using either Inverted Index (movie has only doc d2 in its inverted index) or TF-IDF weights (d1 and d3 will have 0 cosine similarity with the query) will correctly retrieve d2.
+    \item In this corpus, star appears in all the documents, so the system cannot distinguish the meaning of star (it has IDF $=0$).
+    \item The system ignores it entirely in the retrieval of documents.
+    \item If the query was just ``star'', all the docs will score equally and the system would fail.
+    \item Hence, word sense ambiguity causes important query terms to lose discriminative power when they appear across multiple contexts.
+\end{enumerate}

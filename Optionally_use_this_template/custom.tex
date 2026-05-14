@@ -1,0 +1,1373 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{float}  % in preamble
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+\title{NLP\_Project}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Part 1:}
+Given Documents in the dataset:
+\begin{enumerate}
+    \item d1: The star in our solar system provides heat and light.
+    \item d2: That Hollywood star walked the red carpet for the movie premiere.
+    \item d3: Astronomers observe distant stars and galaxies using telescopes.
+    \end{enumerate}
+\subsection{Preprocessing and Inverted Index:}
+\subsubsection{Tokenization:}
+Output after performing tokenization on the documents:
+\begin{enumerate}
+    \item d1: [The, star, in, our, solar, system, provides, heat, and, light, .]
+    \item d2: [That, Hollywood, star, walked, the, red, carpet, for, the, movie, premiere, .]
+    \item d3: [Astronomers, observe, distant, stars, and, galaxies, using, telescopes, .]
+\end{enumerate}
+\subsubsection{Stop Word Removal:}
+Output after removing stop words from the documents:
+\begin{enumerate}
+    \item d1: [star, solar, system, provides, heat, light, .]
+    \item d2: [Hollywood, star, walked, red, carpet, movie, premiere, .]
+    \item d3: [Astronomers, observe, distant, stars, galaxies, using, telescopes, .]
+\end{enumerate}
+
+\subsubsection{Inverted Index:}
+\begin{enumerate}
+    \item star: d1, d2, d3 (lil doubt)
+    \item solar: d1
+    \item system: d1
+    \item provides: d1
+    \item heat: d1
+    \item light: d1
+    \item Hollywood: d2
+    \item walked: d2
+    \item red: d2
+    \item carpet: d2
+    \item movie: d2
+    \item premiere: d2
+    \item Astronomers: d3
+    \item observe: d3
+    \item distant: d3
+    \item galaxies: d3
+    \item using: d3
+    \item telescopes: d3
+\end{enumerate}
+
+\subsection{TF-IDF Document Matrix:}
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|c|ccc|c|c|c|c|ccc|}
+\hline
+\multirow{2}{*}{Term} & \multirow{2}{*}{Q} & \multicolumn{3}{c|}{Counts ($tf_i$)} & \multirow{2}{*}{$df_i$} & \multirow{2}{*}{$D/df_i$} & \multirow{2}{*}{$IDF_i$} & \multicolumn{4}{c|}{Weights ($w_i = tf_i \cdot IDF_i$)} \\
+\cline{3-5} \cline{9-12}
+ &  & $D_1$ & $D_2$ & $D_3$ &  &  &  & Q & $D_1$ & $D_2$ & $D_3$ \\
+\hline
+star         & 1 & 1 & 1 & 1 & 3 & 1   & 0      & 0      & 0      & 0      & 0 \\
+solar        & 0 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0      & 0.4771      & 0 & 0 \\
+system       & 0 & 1 & 0 & 0 & 1 & 3   & 0.4771 & 0      & 0.4771 & 0      & 0 \\
+provides     & 0 & 1 & 0 & 0 & 1 & 3   & 0.4771 & 0      & 0.4771 & 0 & 0 \\
+heat         & 0 & 1 & 0 & 0 & 1 & 3   & 0.4771 & 0      & 0.4771 & 0      & 0 \\
+light        & 1 & 1 & 0 & 0 & 1 & 3 & 0.4771 & 0.4771 & 0.4771 & 0      & 0 \\
+Hollywood    & 0 & 0 & 1 & 0 & 1 & 3   & 0.4771      & 0      & 0      & 0.4771     & 0 \\
+walked       & 0 & 0 & 1 & 0 & 1 & 3   & 0.4771 & 0 & 0      & 0.4771 & 0 \\
+red          & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0      & 0 & 0.4771      & 0 \\
+carpet       & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0 & 0      & 0.4771 & 0 \\
+movie        & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0 & 0      & 0.4771 & 0 \\
+premiere     & 0 & 0 & 1 & 0 & 1 & 3 & 0.4771 & 0 & 0      & 0.4771 & 0 \\
+Astronomers  & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0 & 0    & 0   & 0.4771 \\
+observe      & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0 & 0   & 0    & 0.4771  \\
+distant      & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0 & 0      & 0 & 0.4771  \\
+galaxies     & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0 & 0      & 0 & 0.4771 \\
+using        & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0 & 0      & 0 & 0.4771 \\
+telescopes   & 0 & 0 & 0 & 1 & 1 & 3 & 0.4771 & 0 & 0      & 0 & 0.4771 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Boolen Retrieval:}
+Inverted index of star $\rightarrow$ [d1,d2,d3] and for light $\rightarrow$ [d1]. \\
+Only document d1 is common in both so that document is retrieved
+\subsection{Cosine Similarity and Ranking:}
+\begin{enumerate}
+    \item $|Q|=0.4771$
+    \item $|d1|=5*\sqrt{(0.4771)^2}=5*0.4771=2.3855$
+    \item $|d2|=6*\sqrt{(0.4771)^2}=2.8626$
+    \item $|d3|=6*\sqrt{(0.4771)^2}=2.8626$
+    \item $cos\theta_{d1}=\frac{Q.d1}{|Q||d1|}=\frac{04771*0.4771}{0.4771*5*0.4771}=0.2$
+    \item $cos\theta_{d2}=\frac{Q.d2}{|Q||d2|}=0$
+    \item $cos\theta_{d3}=\frac{Q.d3}{|Q||d3|}=0$
+\end{enumerate}
+\begin{itemize}
+    \item Final Ranking is $d1>d2=d3$
+    \item Yes, Ranking is desirable as d1 would have been the most likely document we would have been searching for, given the query
+\end{itemize}
+\subsection{Analysis of Word Sense Ambiguity:}
+\begin{enumerate}
+    \item In the query 'movie star', 'star' appears in all the document so the query reduces to movie alone. The word 'movie' appears only in document d2, so ideally, only d2 should be retrieved.
+    \item Using either Inverted Index (movie has only doc, d2 in its inverted index) or TF-IDF weights (d1 and d3 will have 0 cosine similarity with the query) will correctly retrieve d2.
+    \item In this corpus, star appears in all the documents, so system can not distinguish the meaning of star (has IDF=0).
+    \item System ignores it entirely in the retrieval of documents.
+    \item If the query was just 'star', all the docs will score equally and system would fail
+    \item Hence, Word sense ambiguity causes important query terms to lose discriminative power when they appear across multiple contexts.
+\end{enumerate}
+\section{Part 2: Building and Extending an IR System}
+\section{Part 3: Evaluating your IR System}
+
+\subsection{Implementation}
+
+code 
+
+\textbf{Reported Values:}
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Metric} & \textbf{Value @ k=10} \\
+\hline
+Precision@10 & 0.2831 \\
+Recall@10 & 0.4095 \\
+F$_{0.5}$-score@10 & 0.2887 \\
+AP@10 & 0.6586 \\
+nDCG@10 & 0.3620 \\
+\hline
+\end{tabular}
+\caption{Evaluation Metrics at $k=10$}
+\end{table}
+
+\subsection{MAP and MRR}
+
+
+\subsection{Plotting evaluation metrics as a function of k}
+
+\begin{table}[h!]
+\centering
+\caption{Evaluation Metrics on Cranfield Dataset}
+\begin{tabular}{c|c c c|c c c}
+\hline
+k & Precision & Recall & F-score & MAP & nDCG & MRR \\
+\hline
+1  & 0.6667 & 0.1115 & 0.3088 & 0.6667 & 0.3637 & 0.6667 \\
+2  & 0.5556 & 0.1811 & 0.3617 & 0.7133 & 0.3506 & 0.7133 \\
+3  & 0.5067 & 0.2405 & 0.3840 & 0.7222 & 0.3535 & 0.7356 \\
+4  & 0.4478 & 0.2750 & 0.3703 & 0.7146 & 0.3506 & 0.7422 \\
+5  & 0.3956 & 0.2978 & 0.3473 & 0.7085 & 0.3436 & 0.7467 \\
+6  & 0.3644 & 0.3283 & 0.3364 & 0.6996 & 0.3455 & 0.7519 \\
+7  & 0.3390 & 0.3505 & 0.3230 & 0.6858 & 0.3492 & 0.7519 \\
+8  & 0.3189 & 0.3740 & 0.3121 & 0.6754 & 0.3542 & 0.7524 \\
+9  & 0.3017 & 0.3974 & 0.3024 & 0.6639 & 0.3593 & 0.7539 \\
+10 & 0.2831 & 0.4095 & 0.2887 & 0.6586 & 0.3620 & 0.7539 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{eval_plot_ir.png}
+    \caption{Trends of IR metrics}
+    \label{fig:placeholder}
+\end{figure}
+\begin{itemize}
+\item \textbf{Precision decreases as $k$ increases :} Precision is highest at lower ranks and gradually decreases as more documents are retrieved. This behavior is expected in most IR systems because the top-ranked documents are generally the most relevant, while lower-ranked documents tend to include more irrelevant results. The sharp drop from approximately 0.67 at $k$=1 to around 0.28 at $k$=10 indicates that the system is effective at identifying highly relevant documents early in the ranking.
+\item \textbf{Recall steadily increases with larger $k$:}
+Recall improves consistently as $k$ increases because more relevant documents are retrieved when additional documents are considered. The increase from roughly 0.11 at $k$=1 to over 0.40 at $k$=10 demonstrates the expected trade-off between precision and recall in ranked retrieval systems.
+\item \textbf{F-score peaks at intermediate ranks:}
+The F-score initially increases and reaches its highest value around $k$=3 or $k$=4, after which it gradually declines. This suggests that the retrieval system achieves the best balance between precision and recall at moderate retrieval depths. Beyond this point, the decline in precision outweighs the gains in recall.
+\item \textbf{MAP remains consistently high:}
+The Mean Average Precision (MAP) curve stays relatively stable and high across all values of $k$, remaining above approximately 0.66 throughout the evaluation. This indicates that relevant documents are generally ranked near the top of the retrieved list, which reflects strong ranking quality.
+\item \textbf{nDCG remains stable across retrieval depths:}
+The nDCG values show only minor variation as $k$ increases. This suggests that the system preserves good ranking order even when additional documents are retrieved. Since nDCG accounts for the positions of relevant documents, the stable trend indicates that highly relevant documents continue to appear near the top ranks.
+\item \textbf{MRR is consistently high:}
+The Mean Reciprocal Rank (MRR) curve remains very high and nearly constant across all values of $k$. This implies that the first relevant document is usually retrieved at very early ranks, often near the top position. Such behavior is particularly desirable in search systems where users typically focus on the first few retrieved documents.
+\end{itemize}
+
+The combined behavior of MAP, nDCG, and MRR indicates that the retrieval system is especially effective at early precision and top-ranked relevance. Even though precision decreases at higher $k$, the ranking quality remains strong because the most relevant documents are consistently prioritized near the beginning of the ranked list.
+
+\subsection{Run time}
+Total Runtime: 8.08431100845337 seconds
+
+
+\section{Part 4: Analysis}
+\subsection{Limitations of the Vector Space Model}
+The vector space model represents documents and queries as vectors in a multi-dimensional space. This is effective for basic retrieval but has a lot of theoretical and practical limitations. In the basic vector space models the terms are considered as the dimensions and the weights in each dimensions are given by TF-IDF values. This can lead to the following problems:
+\begin{enumerate}
+    \item \textbf{Synonymy}: Since VSM relies on exact word matches, it treats different words with the same meaning as an entirely distinct dimension. For example, a query involving aircraft will be very different from a query involving airplane since they are different terms. This can lead to false Negatives.
+
+    \item \textbf{Polysemy}: VSM cannot distinguish between different meanings of the same word. This can lead to false positives, unnecessarily retrieving irrelevant documents.
+
+    \item \textbf{Independence Assumption}: VSM assumes terms are independent of one another. Ideally the relation between terms should also be modelled.
+
+    \item \textbf{Ignoring Word Order and Context}: VSM ignores word order, complex phrases and the context in which a word appears. For example, stress on wings and wings under stress should be different things but are treated as the same thing.
+
+    \item \textbf{Lack of Semantic Understanding}: VSM does not capture the meaning of the documents/queries. No underlying concepts are captured.
+\end{enumerate}
+
+\subsubsection{Examples from the Cranfield Dataset}
+
+The following examples from the Cranfield collection demonstrate how the theoretical shortcomings of the VSM can be seen in actual retrieval:
+
+\begin{itemize}
+    \item \textbf{Synonymy}: "Experimental investigation of the pressure distribution on an aerofoil"
+    \begin{itemize}
+    \item This illustrates a failure to capture synonyms. A query using \textit{"airfoil"} would fail to match this document, creating a false negative because the terms are mapped to distinct dimensions.
+    \end{itemize}
+    
+    \item \textbf{Polysemy}: "The effect of the pitch of the propeller on performance"
+    \begin{itemize}
+    \item This sentence shows the risk of false positives. A query for \textit{"aircraft pitch"} (referring to stability) would incorrectly retrieve this document because VSM cannot distinguish between propeller geometry and longitudinal rotation.
+    \end{itemize}
+
+    \item \textbf{Independence Assumption}: "The study of boundary layer transition"\\
+    The system treats \textit{"boundary"} and \textit{"layer"} as independent tokens. This allows irrelevant documents discussing "geological boundaries" or "atmospheric layers" to achieve high similarity scores.
+
+    \item \textbf{Word Order}: VSM cannot differentiate the sentence \\ "Interference effects of the wing on the body" from \\"Interference effects of the body on the wing."\\ Both yield identical vectors, ignoring the specific aerodynamic context of which component influences the other.
+
+    \item \textbf{Semantic Understanding}: "The analysis of thermal stress in structures"\\
+    This would not be retrieved by a query for \textit{'heat-induced deformation."} Since there is no keyword overlap, the system fails to bridge the semantic gap between the physical cause (heat) and the resulting effect (thermal stress).
+\end{itemize}
+
+\subsection*{4.2 The Zero-Result Problem (OOV Issue)}
+
+\textbf{What happens when a query contains a word that does not appear in the document vocabulary (Out-of-Vocabulary term)?}
+\begin{itemize}
+    \item In VSM, the vocabulary is predefined by the unique terms indexed from the document during preprocessing. When an Out-of-Vocabulary term is encountered in a query, it has no corresponding entry in the inverted index.
+    \item The system cannot compute a Term Frequency (TF) or Inverse Document Frequency (IDF) for that term. In the resulting query vector $\mathbf{q}$, the dimension corresponding to the OOV term is assigned a weight of zero.
+\end{itemize}
+
+\textbf{How does this affect retrieval results in your system?}
+\begin{itemize}
+    \item {Partial Match:} If the query consists of both known and OOV terms, the OOV components are ignored. The cosine similarity is calculated using only the known terms, which may lead to a loss of query specificity.
+    \item {The Zero-Result Problem:} If all terms in a query are OOV, the entire query vector $\mathbf{q}$ becomes a zero vector ($\mathbf{0}$).
+    \item Mathematically, the cosine similarity between any document vector $\mathbf{d}$ and the query vector $\mathbf{q}$ becomes zero:
+    \[ \text{Cosine\ Similarity} = \frac{\mathbf{d} \cdot \mathbf{q}}{\|\mathbf{d}\| \|\mathbf{q}\|} = \frac{\mathbf{d} \cdot \mathbf{0}}{\|\mathbf{d}\| \cdot 0} \rightarrow 0 \]
+    \item As a result, the system fails to retrieve any documents, even if relevant content exists within the corpus under different variations or synonyms.
+\end{itemize}
+
+\textbf{Example query demonstrating this issue:}
+\begin{itemize}
+    \item The Cranfield dataset consists of aeronautics research mainly from the 1960s.
+    \item{Queries:} "Effect of \textbf{nanoscale} coatings on \textbf{composite} wing durability." or "Using \textbf{GPU} acceleration for real-time flight \textbf{simulations}."
+    
+    \item{Explanation:} While the term "wing" is likely in the vocabulary, modern technical terms like \textbf{"nanoscale"} or \textbf{GPU} or specific
+    contexts for \textbf{"composite"} materials may be OOV for this 1960s dataset. If these key constraints are OOV, the system will either retrieve general "wing" or "flight" documents (ignoring the specific research intent) or return no results at all if the entire phrase is missing from the index.
+\end{itemize}
+
+\section{Project:}
+\subsection{Introduction To Problem Setting:}
+An IR system aims to retrieve relevant documents from a large corpus in response to a user’s query. A fundamental approach to IR is the Vector Space Model (VSM), where both documents and queries are represented as vectors in a high-dimensional space defined by the vocabulary of the corpus. Similarity between a query and documents is typically computed using measures such as cosine similarity over TF-IDF weighted vectors.\\ \\
+In this project, we begin with a basic IR system built on the VSM framework using the Cranfield dataset. Retrieval is performed by ranking documents based on their similarity to the query.\\ \\
+While the VSM model provides a simple and computationally efficient framework, it relies on strong assumptions; most notably that words are independent and that meaning can be captured purely through term frequency statistics. These assumptions often lead to suboptimal retrieval performance, especially in the presence of word sense ambiguity, synonymy, and out-of-vocabulary (OOV) terms.\\ \\
+The goal of this project is to analyze the limitations of this baseline system and develop improved retrieval methods that better capture semantic relationships between words and documents. We evaluate system performance using standard IR metrics such as Precision, Recall, Mean Average Precision (MAP), and nDCG, and compare the effectiveness of enhanced models against the baseline VSM.
+
+\subsection{Baseline:}
+\subsection{Some Other Approaches: }
+\subsubsection{Approach 1: Latent Semantic Analysis (LSA)}
+
+To address the limitations of the Vector Space Model, specifically synonymy and polysemy, we implemented Latent Semantic Analysis (LSA). This approach moves away from exact keyword matching by trying to uncovering the underlying topics (semantic structure) of the corpus using singular value decomposition.
+
+\textbf{The Hypothesis:} Every document has underlying topics that are not explicitly stated but are reflected in the word co-occurrences across the corpus. The co-occurances are enough to capture synonymy and semantic context.
+
+\textbf{Mathematical Formulation:}
+The core of LSA is the Singular Value Decomposition (SVD). Given the Term-Document Matrix $A$ of rank $r$, SVD decomposes it into three matrices:
+\[ A = U \Sigma V^T \]
+To reduce noise and capture latent concepts, we approximate $A$ by keeping only the top $k$ singular values:
+\[ A \approx A_k = U_k \Sigma_k V_k^T \]
+where $U_k$ represents the term-concept mapping and $V_k^T$ represents the document-concept mapping in a $k$-dimensional space.
+
+\textbf{Implementation Details:}
+In our implementation, we followed these specific steps to optimize retrieval performance:
+\begin{enumerate}
+    \item \textbf{Log-TF Weighting:} Instead of raw counts, we used Log-TF weighting ($1 + \log(\text{freq})$). This dampens the effect of very high-frequency words, which is critical for stable SVD decomposition.
+    \item \textbf{Smoothed IDF:} We applied smoothed Inverse Document Frequency to the Term-Document Matrix before decomposition to highlight discriminative terms.
+    \item \textbf{Query Projection:} Unlike the documents which are pre-computed, queries are projected into the latent space using the transformation:
+    \[ q_{latent} = q^T U_k \Sigma_k^{-1} \]
+    \item \textbf{Similarity Measurement:} Retrieval is performed by calculating the Cosine Similarity between the query vector and document vectors within the reduced $k$-dimensional latent space.
+\end{enumerate}
+
+\textbf{Observations and metrics}
+The following table records the time taken to build the latent semantic index and perform ranking across the query set.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Process} & \textbf{Time (seconds)} \\ \hline
+Index Building (SVD + Weighting) & 10.13 \\ \hline
+Ranking (225 Queries) & 0.49 \\ \hline
+\end{tabular}
+\caption{LSA Execution Runtimes}
+\end{table}
+
+The table below shows the performance of the LSA model across various values of $k$.
+
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|ccc|ccc|}
+\hline
+\textbf{K} & \textbf{Precision} & \textbf{Recall} & \textbf{F-score} & \textbf{MAP} & \textbf{nDCG} & \textbf{MRR} \\ \hline
+1  & 0.6222 & 0.1004 & 0.2840 & 0.6222 & 0.3174 & 0.6222 \\
+2  & 0.5511 & 0.1741 & 0.3561 & 0.6778 & 0.3252 & 0.6778 \\
+3  & 0.4993 & 0.2369 & 0.3795 & 0.6848 & 0.3365 & 0.6985 \\
+4  & 0.4600 & 0.2858 & 0.3831 & 0.6849 & 0.3422 & 0.7074 \\
+5  & 0.4213 & 0.3191 & 0.3726 & 0.6771 & 0.3467 & 0.7110 \\
+6  & 0.3985 & 0.3581 & 0.3690 & 0.6662 & 0.3574 & 0.7169 \\
+7  & 0.3810 & 0.3946 & 0.3650 & 0.6524 & 0.3662 & 0.7194 \\
+8  & 0.3589 & 0.4225 & 0.3531 & 0.6424 & 0.3748 & 0.7222 \\
+9  & 0.3407 & 0.4479 & 0.3425 & 0.6294 & 0.3840 & 0.7222 \\
+10 & 0.3267 & 0.4752 & 0.3342 & 0.6186 & 0.3945 & 0.7235 \\ \hline
+\end{tabular}
+\caption{Evaluation Metrics for LSA Model on Cranfield Dataset}
+
+The plot below shows the same info:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{lsa.png}
+    \caption{Plot of metrics across multiple ranks}
+    \label{fig:placeholder}
+\end{figure}
+\end{table}
+
+\textbf{LSA-Synset hybrid approach:}
+
+Another approach, which we worked on in the domain of LSA, was to disambiguate each word occurrence using its local context and WordNet, then build the LSA model on semantic concepts.\\
+For each token in a document or query, we use a lightweight Lesk-style algorithm to select the most appropriate WordNet synset:
+\begin{enumerate}
+    \item Candidate Selection: For a given token, we retrieve all WordNet synsets that include that word, giving preference to noun synsets.
+    \item Context Overlap: We build a context window around the token and compare it against the signature of each candidate synset. The signature includes the synset's definition, examples, and related concepts (hypernyms and hyponyms).
+    \item Best Match: We select the synset with the highest overlap between the local context and its signature, breaking ties by lemma match bonus. If no context is available, we default to the first sense.
+\end{enumerate}
+Once tokens are mapped to synsets, we build a concept-document matrix and proceed with the standard LSA-based document ranking and retrieval.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+K & Precision & Recall & F-score & MAP & nDCG & MRR \\ \hline
+1  & 0.5333 & 0.0864 & 0.2431 & 0.5333 & 0.2844 & 0.5333 \\ \hline
+2  & 0.4644 & 0.1476 & 0.2998 & 0.5844 & 0.2865 & 0.5844 \\ \hline
+3  & 0.4281 & 0.1955 & 0.3208 & 0.5993 & 0.2900 & 0.6111 \\ \hline
+4  & 0.3944 & 0.2371 & 0.3257 & 0.6041 & 0.2959 & 0.6233 \\ \hline
+5  & 0.3618 & 0.2689 & 0.3181 & 0.6007 & 0.2999 & 0.6269 \\ \hline
+6  & 0.3407 & 0.3003 & 0.3130 & 0.5919 & 0.3078 & 0.6313 \\ \hline
+7  & 0.3213 & 0.3282 & 0.3061 & 0.5836 & 0.3146 & 0.6339 \\ \hline
+8  & 0.3033 & 0.3516 & 0.2970 & 0.5827 & 0.3201 & 0.6367 \\ \hline
+9  & 0.2859 & 0.3687 & 0.2859 & 0.5723 & 0.3233 & 0.6371 \\ \hline
+10 & 0.2729 & 0.3895 & 0.2778 & 0.5644 & 0.3297 & 0.6389 \\ \hline
+\end{tabular}
+\caption{Evaluation Metrics for LSA-Synset Model on Cranfield Datase}
+\label{tab:metrics}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{lsa_synset.png}
+    \caption{LSA Synset metrics across different ranks}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+Our quantitative evaluation shows that Latent Semantic Analysis (LSA) did not yield the expected performance boost over the baseline TF-IDF Vector Space Model. In fact, we observed a slight decrease in Precision at $k=1$, and the overall metrics remained comparable to or slightly below the baseline. Several factors likely contribute to why the latent semantic hypothesis did not lead to improved retrieval in this specific setting:
+
+\begin{enumerate}
+    \item \textbf{Domain Specificity and Vocabulary Overlap:} The Cranfield dataset consists of highly specialized aeronautical engineering abstracts. In such a technical domain, the vocabulary is often precise and standardized. The "Synonymy" problem that LSA is designed to solve may be less prevalent here because researchers tend to use consistent terminology (e.g., "boundary layer," "supersonic flow"). When exact term matching is already highly effective, the dimensionality reduction in LSA may actually discard discriminative technical details as "noise."
+    
+    \item \textbf{Loss of Specificity due to Dimensionality Reduction:} LSA works by projecting documents into a lower-dimensional concept space ($k=100$). While this captures broad topics, it can blur the distinctions between documents that are semantically similar but technically distinct. In a dataset where documents share many common engineering concepts, the reduced space may map a relevant and an irrelevant document to similar latent vectors, leading to a drop in Precision.
+    
+    \item \textbf{Dataset Scale:} SVD relies on a large number of co-occurrence patterns to accurately define latent dimensions. The Cranfield dataset is relatively small ($1400$ documents). With a limited corpus, the co-occurrence matrix may be too sparse for SVD to capture robust semantic relationships, resulting in latent dimensions that do not truly represent the underlying engineering concepts.
+\end{enumerate}
+
+\textbf{Conclusion:} While LSA is theoretically superior for handling word sense ambiguity, these results suggest that for small-scale, highly specialized technical corpora, the exact term matching and specific weighting of the Vector Space Model remain more robust. The "noise" that LSA attempts to filter out often contains the very specific technical terms required for accurate document discrimination in this domain.
+
+
+\subsubsection{Approach 2: N-gram Based Vector Space Model}
+
+To capture local contextual information and meaningful phrases that are often lost in a unigram-based bag-of-words model, we implemented an N-gram retrieval system (specifically focused on Bigrams, $n=2$).
+
+\textbf{The Hypothesis:} Technical documents often contain multi-word expressions (e.g., "heat flow," "boundary layer") that carry more specific semantic meaning together than their constituent words do individually. Using n-grams should theoretically increase query specificity and improve retrieval precision.
+
+\textbf{Mathematical Formulation:}
+In this model, the dimensions of the vector space are defined by unique n-grams rather than single tokens. The weight for an n-gram $g$ in document $D$ is calculated using the TF-IDF scheme:
+\[ w_{g,D} = \text{tf}_{g,D} \times \log\left(\frac{N+1}{df_g+1}\right) + 1 \]
+Cosine similarity is then computed between the n-gram query vector and document vectors:
+\[ \text{score}(D, Q) = \frac{\sum w_{g,D} \cdot w_{g,Q}}{\|V_D\| \|V_Q\|} \]
+
+\textbf{Implementation Details:}
+\begin{enumerate}
+    \item \textbf{Sliding Window Generation:} N-grams were generated by iterating through the tokenized sentences with a window size of $n=2$.
+    \item \textbf{Dimensionality:} This approach significantly increases the vocabulary size compared to unigrams, as the number of unique bi-grams is typically much higher than unique words.
+    \item \textbf{Smoothing:} We utilized $(N+1)/(df+1)$ smoothing for IDF to prevent division by zero for terms that might appear in the query but not the corpus.
+\end{enumerate}
+
+\textbf{Observations and metrics}
+The following table records the execution time for the N-gram indexing and ranking processes.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Process} & \textbf{Time (seconds)} \\ \hline
+Index Building (Bigram generation + TF-IDF) & 0.38 \\ \hline
+Ranking (225 Queries) & 0.50 \\ \hline
+\end{tabular}
+\caption{N-gram System Execution Runtimes}
+\end{table}
+
+The table below shows the performance of the N-gram model ($n=2$) across various values of $k$.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|ccc|ccc|}
+\hline
+\textbf{k} & \textbf{Precision} & \textbf{Recall} & \textbf{F-score} & \textbf{MAP} & \textbf{nDCG} & \textbf{MRR} \\ \hline
+1  & 0.5778 & 0.1002 & 0.2745 & 0.5778 & 0.3104 & 0.5778 \\
+2  & 0.5067 & 0.1655 & 0.3323 & 0.6511 & 0.3156 & 0.6511 \\
+3  & 0.4430 & 0.2101 & 0.3379 & 0.6567 & 0.3069 & 0.6659 \\
+4  & 0.3756 & 0.2351 & 0.3146 & 0.6544 & 0.2951 & 0.6726 \\
+5  & 0.3307 & 0.2551 & 0.2942 & 0.6511 & 0.2898 & 0.6761 \\
+6  & 0.2978 & 0.2746 & 0.2772 & 0.6464 & 0.2889 & 0.6799 \\
+7  & 0.2743 & 0.2917 & 0.2640 & 0.6299 & 0.2903 & 0.6811 \\
+8  & 0.2572 & 0.3077 & 0.2537 & 0.6216 & 0.2936 & 0.6828 \\
+9  & 0.2385 & 0.3167 & 0.2400 & 0.6143 & 0.2944 & 0.6833 \\
+10 & 0.2249 & 0.3293 & 0.2305 & 0.6058 & 0.2975 & 0.6842 \\ \hline
+\end{tabular}
+\caption{Evaluation Metrics for N-gram Model ($n=2$)}
+
+The plot below shows the same info:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{ngram.png}
+    \caption{Plot of N-gram metrics across multiple ranks}
+    \label{fig:ngram_plot}
+\end{figure}
+\end{table}
+
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+The quantitative results show that the Bigram-based model actually performed lower than both the unigram VSM and the LSA approach. While the hypothesis that multi-word technical phrases are important is sound, several implementation and dataset-specific factors led to this performance degradation:
+
+\begin{enumerate}
+    \item \textbf{Tokenization and Hyphenation Issues:} In the Cranfield dataset, many critical technical phrases like "heat-flow" or "boundary-layer" are hyphenated. Our tokenizer treats these hyphenated strings as a single token. When we apply a bigram sliding window, a phrase like "heat-flow analysis" is tokenized as (\texttt{'heat-flow'}, \texttt{'analysis'}) rather than the expected (\texttt{'heat'}, \texttt{'flow'}). This results in a failure to match queries that use the un-hyphenated form ("heat flow"), leading to a significant loss in recall.
+    
+    \item \textbf{Data Sparsity:} By moving from unigrams to bigrams, the feature space grows exponentially while the frequency of each individual feature drops. Many relevant bigrams might appear only once in the entire corpus, leading to unreliable IDF weights and making the system sensitive to slight variations in phrasing.
+    
+
+\end{enumerate}
+
+\textbf{Conclusion:} The N-gram approach failed to improve the system primarily because the existing tokenizer already captured complex phrases as single units when hyphenated. The resulting sparsity and lack of flexibility outweighed the benefits of capturing local context.
+
+\subsubsection{Approach 3: Sentence-wise Word Embedding Retrieval (Word2Vec)}
+
+To move beyond exact term-matching and latent topic modeling, we implemented a semantic retrieval system based on dense vector representations. This approach leverages Word2Vec embeddings to capture the fine-grained semantic meaning of words in a continuous vector space.
+
+\textbf{The Hypothesis:} Traditional models (VSM/LSA) treat documents as bags of words or global topic distributions, often losing the local semantic coherence of individual sentences. By representing documents as sequences of sentence-level embeddings and using a "Soft Pooling" mechanism, we can identify documents that contain specific semantic matches to query sentences, regardless of the exact vocabulary used.
+
+\textbf{Mathematical Formulation:}
+The retrieval process involves three primary levels of vector aggregation:
+\begin{enumerate}
+    \item \textbf{Sentence Representation:} Each sentence $S$ is represented by the centroid of its constituent word vectors $v_w$:
+    \[ V_S = \frac{1}{|S|} \sum_{w \in S} v_w \]
+    \item \textbf{Soft Pooling Similarity:} To compare a query sentence $Q$ against a document $D$ (composed of sentences $\{S_1, S_2, \dots, S_n\}$), we calculate the cosine similarities and aggregate them using a Log-Sum-Exp based soft pooling function:
+    \[ \text{Score}(Q, D) = \frac{1}{\beta} \log \left( \frac{1}{n} \sum_{i=1}^{n} \exp(\beta \cdot \cos(V_Q, V_{S_i})) \right) \]
+    where $\beta$ is a temperature parameter (set to $8.0$) that controls the sharpness of the pooling. A higher $\beta$ makes the function behave more like a Max-Pooling operation.
+    \item \textbf{Query Aggregation:} The final document score is the average of the soft-pooled scores across all sentences in the query.
+\end{enumerate}
+
+\textbf{Implementation Details:}
+Our implementation provides a robust framework for handling both domain-specific and general-purpose embeddings:
+\begin{enumerate}
+    \item \textbf{Dual-Embedding Support:} The system is designed to utilize either high-dimensional pretrained vectors (e.g., Google News 300-dim) for general semantic breadth or to train custom embeddings directly on the Cranfield corpus to capture specialized aeronautical terminology.
+    \item \textbf{Length-Normalized Soft Pooling:} Unlike raw Max-Pooling, which heavily biases long documents, our soft pooling is normalized by the number of sentences. This allows a single highly relevant sentence to surface a document without unfairly penalizing concise abstracts.
+    \item \textbf{Stable Vector Computation:} We implemented a fallback mechanism for out-of-vocabulary (OOV) tokens by attempting case-insensitive matches before assigning a zero vector. Document and query vectors are pre-normalized to ensure efficient cosine similarity computation during the ranking phase.
+    \item \textbf{Computational Efficiency:} Sentence vectors and their norms are pre-calculated during the indexing phase to ensure that the ranking process, despite the complexity of the soft-pooling function, remains performant for large query sets. The computed embeddings are also stored in a cache (a json file) and can be used in future retrievals.
+\end{enumerate}
+
+\textbf{Observations and Metrics}
+
+The tables below provide a comprehensive rank-wise evaluation ($k=1$ to $10$) for the Sentence-wise Word2Vec retrieval system. We compare high-dimensional pretrained vectors against custom-trained vectors.
+
+\begin{table}[H]
+\centering
+\small
+\begin{minipage}{0.48\textwidth}
+\centering
+\begin{tabular}{|c|ccc|ccc|}
+\hline
+\multicolumn{5}{|c|}{\textbf{Pretrained (Google News - 300d)}} \\ \hline
+\textbf{k} & \textbf{Prec} & \textbf{Rec} & \textbf{MAP} & \textbf{nDCG} \\ \hline
+1  & 0.4889 & 0.0810 & 0.4889 & 0.2796 \\
+2  & 0.4222 & 0.1350 & 0.5556 & 0.2665 \\
+3  & 0.3511 & 0.1640 & 0.5678 & 0.2447 \\
+4  & 0.3211 & 0.1992 & 0.5790 & 0.2499 \\
+5  & 0.2836 & 0.2179 & 0.5762 & 0.2454 \\
+6  & 0.2600 & 0.2375 & 0.5678 & 0.2453 \\
+7  & 0.2368 & 0.2493 & 0.5623 & 0.2445 \\
+8  & 0.2228 & 0.2654 & 0.5457 & 0.2475 \\
+9  & 0.2069 & 0.2749 & 0.5390 & 0.2488 \\
+10 & 0.1973 & 0.2883 & 0.5301 & 0.2523 \\ \hline
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\centering
+\begin{tabular}{|c|ccc|ccc|}
+\hline
+\multicolumn{5}{|c|}{\textbf{Custom Trained (Cranfield - 100d)}} \\ \hline
+\textbf{k} & \textbf{Prec} & \textbf{Rec} & \textbf{MAP} & \textbf{nDCG} \\ \hline
+1  & 0.0578 & 0.0082 & 0.0578 & 0.0348 \\
+2  & 0.0422 & 0.0116 & 0.0689 & 0.0280 \\
+3  & 0.0459 & 0.0190 & 0.0774 & 0.0322 \\
+4  & 0.0467 & 0.0243 & 0.0851 & 0.0332 \\
+5  & 0.0444 & 0.0302 & 0.0914 & 0.0336 \\
+6  & 0.0474 & 0.0396 & 0.0967 & 0.0379 \\
+7  & 0.0489 & 0.0493 & 0.0986 & 0.0416 \\
+8  & 0.0489 & 0.0575 & 0.1027 & 0.0438 \\
+9  & 0.0479 & 0.0632 & 0.1050 & 0.0454 \\
+10 & 0.0453 & 0.0663 & 0.1072 & 0.0460 \\ \hline
+\end{tabular}
+\end{minipage}
+\caption{Full Rank-wise Comparison of Word2Vec Retrieval (k=1 to 10)}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{w2p.png}
+        \caption{Pretrained Model (300d)}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{wod2ect.png}
+        \caption{Custom Trained Model (100d)}
+    \end{subfigure}
+    \caption{Trend of IR Metrics across all 10 ranks for Word2Vec approaches}
+    \label{fig:w2v_full_metrics}
+\end{figure}
+
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+The quantitative results demonstrate that while the distributional semantics hypothesis holds promise, the choice of embedding source is critical. Both Word2Vec implementations underperformed relative to the baseline Vector Space Model (VSM), with the following underlying causes:
+
+\begin{enumerate}
+    \item \textbf{Vocabulary and Domain Shift (Pretrained Case):} Although the pretrained Google News model features 3 million vectors, its performance was consistently lower than the baseline (approx. 0.1 reduction across MAP and Precision). This is likely due to the absence of specialized technical terminology in general news corpora. In the Cranfield dataset, specific aeronautical terms carry the most discriminative weight; if these are missing from the pretrained vocabulary, the resulting "centroid" for a sentence becomes semantically hollow.
+    
+    \item \textbf{The Data Scarcity Barrier (Custom Case):} The custom-trained model performed significantly worse, with Precision and MAP failing to cross the 0.1 threshold. Word2Vec relies on massive amounts of data to learn meaningful spatial relationships between words via co-occurrence. The Cranfield dataset ($1,400$ documents) is several orders of magnitude too small to train stable embeddings. Consequently, the vectors produced were essentially random noise, leading to the near-failure of the retrieval task.
+
+\end{enumerate}
+
+\textbf{Conclusion:} Word2Vec is an effective tool for large-scale, general-purpose retrieval. However, for niche, small-scale technical corpora like Cranfield, the sparse but exact term-weighting of TF-IDF remains the superior approach.
+
+\subsubsection{Approach 4: Statistical Language Modeling (SLM) with Dirichlet Smoothing}
+
+To move beyond the geometric distance constraints of the Vector Space Model, we implemented a generative approach using Statistical Language Modeling (SLM). In this paradigm, retrieval is framed as a probability estimation problem where documents are ranked based on the likelihood that they generated the given query.
+
+\textbf{The Hypothesis:} A document is relevant to a query if the query is likely to have been generated by that document's underlying language model. By employing Dirichlet smoothing, we can effectively balance document-specific word distributions with global collection statistics, addressing the data sparsity (zero-frequency) issue common in small, technical corpora.
+
+\textbf{Mathematical Formulation:}
+The retrieval score for a document $D$ given a query $Q$ is calculated as the log-likelihood of the query tokens $\{w_1, w_2, \dots, w_n\}$ being generated by the document model $M_d$:
+\[ \text{Score}(D, Q) = \sum_{w \in Q} \log P(w | M_d) \]
+To ensure numerical stability and prevent zero probabilities for terms missing from a document, we use Bayesian smoothing with a Dirichlet prior:
+\[ P(w | M_d) = \frac{c(w, D) + \mu \cdot P(w | C)}{|D| + \mu} \]
+Where:
+\begin{itemize}
+    \item $c(w, D)$ is the count of term $w$ in document $D$.
+    \item $|D|$ is the total number of tokens in the document.
+    \item $P(w | C)$ is the probability of the term in the entire collection ($count(w, C) / total\_collection\_tokens$).
+    \item $\mu$ is the smoothing parameter, dynamically set to the average document length of the corpus.
+\end{itemize}
+
+\textbf{Implementation Details:}
+\begin{enumerate}
+    \item \textbf{Frequency Indexing:} The `buildIndex` function calculates document-level term frequencies, total document lengths, and global collection-wide frequencies.
+    \item \textbf{Dynamic Smoothing:} The implementation automatically calculates $\mu$ as the average length of all documents in the index to optimize the smoothing effect for the specific dataset.
+    \item \textbf{Log-Domain Ranking:} To prevent underflow during the multiplication of multiple small probabilities, all scores are computed as sums of logarithms.
+    \item \textbf{OOV Handling:} For terms entirely absent from the collection, the model falls back to a minimal probability constant based on the total collection size to ensure ranking stability.
+\end{enumerate}
+
+\textbf{Observations and Metrics}
+The following table records the execution time for the SLM indexing and ranking processes.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Process} & \textbf{Time (seconds)} \\ \hline
+Index Building (Frequency Counts) & 0.0315 \\ \hline
+Ranking (225 Queries) & 1.5194 \\ \hline
+\end{tabular}
+\caption{SLM Execution Runtimes}
+\end{table}
+
+The performance of the SLM model on the Cranfield dataset across various values of $k$ is detailed below:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|ccc|ccc|}
+\hline
+\textbf{k} & \textbf{Precision} & \textbf{Recall} & \textbf{F-score} & \textbf{MAP} & \textbf{nDCG} & \textbf{MRR} \\ \hline
+1  & 0.6977 & 0.1179 & 0.3267 & 0.6977 & 0.3600 & 0.6977 \\
+2  & 0.5577 & 0.1813 & 0.3637 & 0.7422 & 0.3398 & 0.7422 \\
+3  & 0.5007 & 0.2437 & 0.3833 & 0.7366 & 0.3439 & 0.7555 \\
+4  & 0.4411 & 0.2780 & 0.3684 & 0.7218 & 0.3391 & 0.7588 \\
+5  & 0.4026 & 0.3117 & 0.3572 & 0.7134 & 0.3411 & 0.7677 \\
+6  & 0.3622 & 0.3297 & 0.3352 & 0.7090 & 0.3387 & 0.7692 \\
+7  & 0.3307 & 0.3469 & 0.3166 & 0.7008 & 0.3391 & 0.7705 \\
+8  & 0.3100 & 0.3703 & 0.3053 & 0.6837 & 0.3422 & 0.7716 \\
+9  & 0.2883 & 0.3840 & 0.2901 & 0.6749 & 0.3445 & 0.7721 \\
+10 & 0.2724 & 0.4009 & 0.2791 & 0.6650 & 0.3500 & 0.7721 \\ \hline
+\end{tabular}
+\caption{Evaluation Metrics for SLM Model (Dirichlet Smoothing)}
+\end{table}
+
+The plot below illustrates the behavior of these metrics as $k$ increases:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{slm_plot.png}
+    \caption{Trend of IR Metrics for SLM approach}
+    \label{fig:slm_plot}
+\end{figure}
+
+\textbf{Comparative Analysis}
+
+The Statistical Language Model achieved an overall high performance on the Cranfield dataset, notably reaching a Precision @ 1 of $0.6977$ and an MRR of $0.7721$. This represents a significant improvement over LSA ($0.6222$), N-gram VSM ($0.5778$), and Word2Vec ($0.4889$). The reasons for this improvement include:
+
+\begin{enumerate}
+    \item \textbf{Generative Robustness:} Unlike VSM or LSA which rely on spatial distance, SLM calculates the probability of query generation. In technical corpora where abstracts are short, the probabilistic framework better handles the likelihood of term occurrence than geometric proximity.
+    
+    \item \textbf{The Efficacy of Dirichlet Smoothing:} Standard TF-IDF methods (like N-grams) return a zero score if a query term is missing. SLM's use of the collection probability $P(w|C)$ as a "safety net" allows documents that are semantically relevant but missing exact keywords to still rank highly.
+    
+    \item \textbf{Stability in Small Data Scenarios:} LSA blurs precise technical terms into latent concepts, and Word2Vec requires massive data to learn meaningful embeddings. With only $1,400$ documents, LSA and Word2Vec vectors become noisy. SLM remains stable because it relies on robust count-based statistics $c(w, D)$.
+
+    \item \textbf{Inherent Length Normalization:} The Dirichlet denominator ($|D| + \mu$) naturally penalizes short documents that might have high term density by chance while rewarding longer, more comprehensive technical documents. This is reflected in the high MRR, indicating the most relevant document was frequently surfaced at the top.
+\end{enumerate}
+
+\textbf{Conclusion:} SLM proved to be an effective approach because it maintains the precision of exact term matching while providing a probabilistic mechanism to handle technical data sparsity without the noise introduced by dimensionality reduction or neural embeddings.
+
+
+
+
+\subsubsection{Approach 7: BM25+:}
+
+To address the limitations of the baseline TF-IDF Vector Space Model (VSM), we implemented the BM25+ retrieval model, an extension of the classical BM25 probabilistic ranking framework. Unlike cosine similarity-based VSM retrieval, BM25+ explicitly models term saturation and document length normalization while also introducing an additive correction factor that alleviates biases against longer documents.
+
+The motivation behind this approach was the observation that the standard Vector Space Model assumes a linear relationship between term frequency and relevance. However, in real-world Information Retrieval tasks, repeated occurrences of a term do not increase relevance linearly. Furthermore, cosine normalization in TF-IDF may overly penalize longer technical documents even when they contain highly relevant information.
+
+BM25+ attempts to address these issues by:
+\begin{itemize}
+    \item introducing probabilistic term weighting,
+    \item applying non-linear term-frequency saturation,
+    \item normalizing document length,
+    \item and adding a lower-bound correction term for matched query terms.
+\end{itemize}
+
+This makes BM25+ particularly suitable for technical corpora like the Cranfield dataset, where relevant documents are often longer and contain repeated domain-specific terminology.
+
+\textbf{Hypothesis:} The BM25+ probabilistic retrieval model outperforms the baseline TF-IDF Vector Space Model on the task of document ranking over the Cranfield dataset under the assumption that probabilistic term weighting and improved document length normalization better capture lexical relevance than cosine similarity-based retrieval, as measured using Precision, MAP, nDCG, and MRR evaluation metrics.
+
+More specifically, we hypothesized that:
+\begin{itemize}
+    \item BM25+ would improve Precision@k by ranking highly relevant technical documents earlier,
+    \item document length normalization would reduce the bias against longer abstracts,
+    \item and the additive BM25+ correction term would improve ranking stability for partially matching documents.
+\end{itemize}
+
+\textbf{Mathematical Formulation:}
+
+The BM25+ scoring function used in our implementation is:
+
+\[
+BM25^{+}(D,Q)=\sum_{t\in Q} IDF(t)\left(
+\frac{f(t,D)(k_1+1)}
+{f(t,D)+k_1\left(1-b+b\frac{|D|}{avgdl}\right)}
++\delta
+\right)
+\]
+
+where:
+\begin{itemize}
+    \item \(f(t,D)\) is the frequency of term \(t\) in document \(D\),
+    \item \(|D|\) is the document length,
+    \item \(avgdl\) is the average document length across the corpus,
+    \item \(k_1\) controls term-frequency saturation,
+    \item \(b\) controls document length normalization,
+    \item and \(\delta\) is the BM25+ additive correction factor.
+\end{itemize}
+
+The inverse document frequency was computed using the probabilistic BM25 formulation:
+
+\[
+IDF(t)=\log\left(
+\frac{N-df_t+0.5}{df_t+0.5}+1
+\right)
+\]
+
+where:
+\begin{itemize}
+    \item \(N\) is the total number of documents,
+    \item and \(df_t\) is the number of documents containing term \(t\).
+\end{itemize}
+
+\textbf{Implementation Details:}
+
+Our implementation followed these specific design choices:
+
+\begin{enumerate}
+    \item \textbf{Token-based Probabilistic Retrieval}
+
+    Documents and queries were preprocessed using:
+    \begin{itemize}
+        \item sentence segmentation,
+        \item tokenization,
+        \item stopword removal,
+        \item and stemming/inflection reduction.
+    \end{itemize}
+
+    \item \textbf{Document Length Normalization}
+
+    Average document length was precomputed during indexing to support BM25 normalization.
+
+    \item \textbf{BM25+ Parameters}
+
+    The following hyperparameters were used:
+    \begin{itemize}
+        \item \(k_1 = 1.5\)
+        \item \(b = 0.75\)
+        \item \(\delta = 1.0\)
+    \end{itemize}
+
+    These are commonly used default BM25+ settings and performed reasonably well on the Cranfield corpus.
+
+    \item \textbf{Deterministic Ranking}
+
+    Ties were resolved using original document ordering to ensure reproducible evaluation.
+\end{enumerate}
+
+\textbf{Evaluation Results:}
+
+The following table summarizes the performance of the BM25+ model on the Cranfield dataset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+k & Precision & Recall & F-score & MAP & nDCG & MRR \\
+\hline
+1 & 0.7022 & 0.1201 & 0.3304 & 0.7022 & 0.3770 & 0.7022 \\
+2 & 0.5911 & 0.1980 & 0.3896 & 0.7467 & 0.3687 & 0.7467 \\
+3 & 0.5185 & 0.2508 & 0.3964 & 0.7452 & 0.3646 & 0.7585 \\
+4 & 0.4478 & 0.2828 & 0.3752 & 0.7384 & 0.3569 & 0.7630 \\
+5 & 0.4080 & 0.3131 & 0.3614 & 0.7242 & 0.3570 & 0.7692 \\
+6 & 0.3741 & 0.3405 & 0.3463 & 0.7153 & 0.3561 & 0.7736 \\
+7 & 0.3416 & 0.3595 & 0.3275 & 0.7063 & 0.3554 & 0.7749 \\
+8 & 0.3133 & 0.3739 & 0.3085 & 0.6989 & 0.3563 & 0.7749 \\
+9 & 0.2938 & 0.3906 & 0.2954 & 0.6869 & 0.3597 & 0.7759 \\
+10 & 0.2760 & 0.4045 & 0.2826 & 0.6763 & 0.3624 & 0.7763 \\
+\hline
+\end{tabular}
+\caption{Evaluation Metrics for BM25+ Model on Cranfield Dataset}
+\end{table}
+
+The plot below illustrates the behavior of these metrics as $k$ increases:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{bm25plus_eval_plot.png}
+    \caption{Trend of IR Metrics for BM25+ approach}
+    \label{fig:placeholder}
+\end{figure}
+\textbf{Comparative Analysis with Baseline VSM:}
+
+Compared to the baseline TF-IDF Vector Space Model, BM25+ showed noticeable improvements across several important ranking metrics.
+
+For example:
+\begin{itemize}
+    \item VSM achieved Precision@1 = 0.6667
+    \item BM25+ achieved Precision@1 = 0.7022
+\end{itemize}
+
+Similarly:
+\begin{itemize}
+    \item VSM achieved MAP@10 = 0.6586
+    \item BM25+ achieved MAP@10 = 0.6763
+\end{itemize}
+
+The BM25+ model also showed:
+\begin{itemize}
+    \item improved Recall across most ranks,
+    \item consistently higher MRR values,
+    \item and slightly improved nDCG scores.
+\end{itemize}
+
+At lower ranks, especially \(k=1\) and \(k=2\), BM25+ demonstrated stronger early retrieval effectiveness, which is highly important in practical search systems where users typically inspect only the top few results.
+
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+The experimental results generally support the proposed hypothesis. BM25+ consistently outperformed the baseline TF-IDF Vector Space Model on several evaluation measures, particularly Precision@1, MAP, Recall, and MRR.
+
+Several factors likely contributed to this improvement.
+
+\begin{enumerate}
+    \item \textbf{Better Term Frequency Modeling}
+
+    Unlike TF-IDF cosine similarity, BM25+ models diminishing returns from repeated term occurrences. This prevents excessively frequent technical terms from dominating the ranking score.
+
+    \item \textbf{Improved Document Length Normalization}
+
+    Technical abstracts within the Cranfield dataset vary significantly in length. BM25+ successfully reduces the over-penalization of longer documents, allowing relevant long-form abstracts to rank higher.
+
+    \item \textbf{Probabilistic Relevance Estimation}
+
+    BM25+ uses a probabilistic interpretation of lexical relevance rather than purely geometric vector similarity. This appears to align better with the retrieval characteristics of technical engineering literature.
+
+    \item \textbf{Additive BM25+ Correction Term}
+
+    The \(\delta\) correction factor helps prevent under-scoring of documents that contain query terms but may otherwise receive low scores due to normalization effects. This likely improved retrieval stability for partially matching documents.
+
+    \item \textbf{Domain Characteristics of Cranfield}
+
+    The Cranfield dataset contains highly specialized technical vocabulary with strong lexical consistency. In such settings, lexical probabilistic models like BM25+ are particularly effective because exact terminology strongly correlates with relevance.
+\end{enumerate}
+
+\textbf{Limitations:}
+
+Although BM25+ improved several ranking metrics, certain limitations remain.
+
+\begin{enumerate}
+    \item \textbf{Still Purely Lexical}
+
+    BM25+ relies entirely on exact token overlap and cannot capture:
+    \begin{itemize}
+        \item semantic similarity,
+        \item paraphrasing,
+        \item synonymy,
+        \item or contextual meaning.
+    \end{itemize}
+
+    \item \textbf{Limited nDCG Improvement}
+
+    While Precision and MAP improved noticeably, nDCG gains were relatively modest. This suggests that BM25+ improves relevance ranking but may still struggle with optimal ordering among partially relevant documents.
+
+    \item \textbf{No Semantic Generalization}
+
+    Documents discussing similar concepts using different terminology may still not be retrieved effectively.
+\end{enumerate}
+
+\textbf{Conclusion:}
+
+The BM25+ retrieval framework demonstrated clear improvements over the baseline TF-IDF Vector Space Model on the Cranfield Information Retrieval task.
+
+The model achieved:
+\begin{itemize}
+    \item higher Precision at early ranks,
+    \item improved MAP,
+    \item stronger Recall,
+    \item and consistently better MRR values.
+\end{itemize}
+
+These results suggest that probabilistic lexical relevance modeling and improved document normalization are highly effective for technical document retrieval tasks involving specialized vocabularies.
+
+\subsubsection{Approach 8: BM25+ with Zero-Shot Neural Re-ranking}
+
+To further improve retrieval performance beyond purely lexical matching, we implemented a hybrid retrieval pipeline combining BM25 retrieval with a transformer-based zero-shot neural reranker. The primary motivation behind this approach was to combine the strong keyword matching ability of BM25 with the semantic understanding capability of modern transformer models.
+
+Traditional lexical retrieval methods (like TF-IDF) rely heavily on exact term overlap between the query and the document. However, relevant documents may contain semantically related concepts expressed using different terminology. A neural reranker can potentially identify such semantic relevance even when direct lexical overlap is limited.
+
+\textbf{Hypothesis:} A hybrid retrieval algorithm consisting of BM25 candidate retrieval followed by transformer-based zero-shot neural reranking outperforms the baseline TF-IDF Vector Space Model for document ranking on the Cranfield dataset under the assumption that semantic relevance extends beyond exact lexical overlap, as measured using Precision, MAP, nDCG, and MRR.
+
+The key assumption behind this hypothesis is that transformer-based rerankers trained on large-scale ranking datasets can generalize semantic matching patterns to unseen technical domains without requiring task-specific fine-tuning.
+
+\textbf{Mathematical Formulation:}
+
+The retrieval system consisted of two stages:
+
+\begin{enumerate}
+    \item BM25 candidate retrieval
+    \item Neural semantic reranking
+\end{enumerate}
+The BM25 scoring function is given by:
+
+\[
+Score(D,Q)=\sum_{t \in Q} IDF(t)
+\left(
+\frac{tf(t,D)(k_1+1)}
+{tf(t,D)+k_1(1-b+b\frac{|D|}{avgdl})}
+\right)
+\]
+where:
+
+\begin{itemize}
+    \item $tf(t,D)$ is the term frequency of term $t$ in document $D$
+    \item $|D|$ is the document length
+    \item $avgdl$ is the average document length
+    \item $k_1$ controls term frequency saturation
+    \item $b$ controls document length normalization
+    \item $\delta$ is the BM25+ correction constant
+\end{itemize}
+We could use BM25+ to further improve our retrieval. BM25+ modifies the standard BM25 scoring function by introducing a constant offset term $\delta$ to reduce over-penalization of long documents.\\
+The BM25+ scoring function is given by:
+\[
+Score(D,Q)=\sum_{t \in Q} IDF(t)
+\left(
+\frac{tf(t,D)(k_1+1)}
+{tf(t,D)+k_1(1-b+b\frac{|D|}{avgdl})}
++\delta
+\right)
+\]
+The parameters used in our implementation were:
+
+\[
+k_1 = 1.5, \quad b = 0.75, \quad \delta = 1.0
+\]
+
+After candidate retrieval, the top-ranked documents were passed to a transformer-based cross-encoder reranker:
+
+\[
+\texttt{cross-encoder/ms-marco-TinyBERT-L-2-v2}
+\]
+
+The reranker jointly encoded the query and document text and produced a semantic relevance score:
+
+\[
+(Query, Document) \rightarrow CrossEncoder \rightarrow RelevanceScore
+\]
+
+The candidate documents were then reordered according to these semantic relevance scores.
+
+\textbf{Implementation Details:}
+
+The implementation followed the following pipeline:
+
+\begin{enumerate}
+    \item Documents and queries were preprocessed using:
+    \begin{itemize}
+        \item Sentence segmentation
+        \item Tokenization
+        \item Inflection reduction
+        \item Stopword removal
+    \end{itemize}
+
+    \item BM25+ index statistics were computed:
+    \begin{itemize}
+        \item Document term frequencies
+        \item Document frequencies
+        \item Average document length
+        \item BM25 IDF values
+    \end{itemize}
+
+    \item BM25+ was used as a first-stage retriever to obtain the top 10 candidate documents.
+
+    \item The candidate query-document pairs were passed through the TinyBERT cross-encoder reranker.
+
+    \item The reranker generated semantic relevance scores which were used to reorder the candidate documents.
+
+    \item Remaining documents were appended after reranking to form the final ranking list.
+\end{enumerate}
+
+\textbf{Observations and Metrics:}
+
+The following table records the evaluation metrics obtained using the BM25+ reranking pipeline on the Cranfield dataset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+k & Precision & Recall & F-score & MAP & nDCG & MRR \\
+\hline
+1 & 0.6444 & 0.1082 & 0.2988 & 0.6444 & 0.3567 & 0.6444 \\
+2 & 0.5733 & 0.1865 & 0.3736 & 0.7156 & 0.3567 & 0.7156 \\
+3 & 0.5156 & 0.2479 & 0.3926 & 0.7237 & 0.3590 & 0.7363 \\
+4 & 0.4567 & 0.2856 & 0.3806 & 0.7156 & 0.3531 & 0.7419 \\
+5 & 0.4107 & 0.3193 & 0.3649 & 0.7062 & 0.3496 & 0.7463 \\
+6 & 0.3785 & 0.3436 & 0.3503 & 0.6970 & 0.3510 & 0.7478 \\
+7 & 0.3460 & 0.3627 & 0.3313 & 0.6880 & 0.3526 & 0.7484 \\
+8 & 0.3239 & 0.3841 & 0.3185 & 0.6793 & 0.3561 & 0.7501 \\
+9 & 0.2968 & 0.3933 & 0.2984 & 0.6722 & 0.3557 & 0.7501 \\
+10 & 0.2760 & 0.4045 & 0.2826 & 0.6677 & 0.3571 & 0.7505 \\
+\hline
+\end{tabular}
+\caption{Evaluation Metrics for BM25+ with Zero-Shot Neural Reranking on Cranfield Dataset}
+\end{table}
+
+The plot below illustrates the behavior of these metrics as $k$ increases:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{bm25_reranker_eval.png}
+    \caption{Trend of IR Metrics for BM25+Reranker approach}
+    \label{fig:placeholder}
+\end{figure}
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+Our quantitative evaluation shows that BM25+ with zero-shot neural reranking did not yield the expected performance improvement over the baseline TF-IDF Vector Space Model or the standalone BM25+ retrieval system. In fact, we observed a slight decrease in Precision@1 and only marginal changes in ranking quality metrics such as MAP and nDCG. Several factors likely contributed to why the semantic reranking hypothesis did not lead to improved retrieval performance in this setting:
+
+\begin{enumerate}
+    \item \textbf{Domain Specificity and Vocabulary Precision:}  
+    The Cranfield dataset consists of highly specialized aeronautical engineering abstracts where technical terminology is extremely precise and standardized. In such domains, exact lexical matching is already highly effective because relevant documents often contain the exact engineering terms used in the query. As a result, the semantic reranker had limited opportunity to improve upon the already strong lexical rankings produced by BM25+.
+
+    \item \textbf{Zero-Shot Domain Mismatch:}  
+    The transformer reranker used in our experiments was trained on the MS MARCO dataset, which primarily contains web search queries and natural language passages. The distribution of technical scientific abstracts in Cranfield differs significantly from web search data. Without domain-specific fine-tuning, the reranker could not fully adapt to aeronautical engineering terminology and retrieval patterns.
+
+    \item \textbf{Semantic Over-Generalization:}  
+    The neural reranker occasionally promoted documents that were semantically related but not directly relevant to the precise engineering information need expressed in the query. This caused a decrease in Precision@1 from 0.6667 in the baseline VSM to 0.6444 in the reranked system.
+
+    \item \textbf{Candidate Retrieval Limitation:}  
+    Since reranking was applied only to the top 10 documents retrieved by BM25+, the reranker could only reorder documents already retrieved in the first stage. If BM25+ failed to retrieve a relevant document initially, the reranker had no opportunity to recover it.
+
+    \item \textbf{Computational Overhead:}  
+    The transformer reranker substantially increased retrieval time because neural inference had to be performed for every query-document pair in the candidate set. However, this additional computational complexity did not translate into meaningful improvements in retrieval effectiveness.
+\end{enumerate}
+
+\textbf{Conclusion:}
+
+While transformer-based rerankers are theoretically powerful for semantic retrieval tasks, our experiments suggest that zero-shot neural reranking does not necessarily improve retrieval quality for small, highly specialized technical corpora such as Cranfield.
+
+The results indicate that the exact lexical matching capability of BM25+ remains highly effective in scientific domains where terminology is standardized and semantically precise. Without domain-specific fine-tuning, transformer rerankers may over-generalize semantic similarity and fail to consistently outperform simpler lexical retrieval methods.
+
+\subsubsection{Approach 9: Learning-to-Rank (LTR)}
+
+To improve the limitations of the baseline TF-IDF Vector Space Model (VSM), we implemented a Learning-to-Rank (LTR) framework using a LambdaMART-based ranking model. Unlike the traditional VSM, which relies solely on cosine similarity between TF-IDF vectors, the LTR approach attempts to learn an optimal ranking function directly from relevance judgments using supervised machine learning.
+
+The primary motivation behind this approach was the observation that the Vector Space Model assumes cosine similarity alone is sufficient for ranking relevance. However, relevance in Information Retrieval often depends on multiple interacting factors such as query term overlap, document relevance patterns, and ranking position. A machine-learned ranking function may therefore capture these interactions more effectively than a manually designed similarity function.
+
+\textbf{The Hypothesis:} A supervised Learning-to-Rank framework outperforms the baseline TF-IDF Vector Space Model (VSM) on the task of document ranking over the Cranfield dataset under the assumption that relevance patterns can be learned from query-document relevance judgments more effectively than using fixed cosine similarity scoring, as measured using Precision, MAP, nDCG, and MRR evaluation metrics.
+
+In particular, we hypothesized that:
+\begin{itemize}
+    \item A supervised ranking model could learn better ranking behavior directly from relevance labels.
+    \item Query-document relevance patterns learned during training would improve the ordering of relevant documents.
+    \item Optimizing ranking behavior directly would improve ranking-quality-oriented metrics such as MAP and nDCG.
+\end{itemize}
+
+\textbf{Learning Framework:}
+\begin{itemize}
+\item We used the LambdaMART ranking algorithm implemented using LightGBM’s ranking framework. LambdaMART is a gradient-boosted decision tree model optimized directly for ranking metrics such as nDCG.
+
+\item Unlike the baseline Vector Space Model, which computes document relevance using only cosine similarity between TF-IDF vectors, the LTR framework learns ranking patterns from labeled query-document pairs.
+\end{itemize}
+The model was trained using:
+\begin{itemize}
+    \item Query-document relevance labels derived from Cranfield relevance judgments
+    \item Grouped ranking batches per query
+    \item Pairwise ranking optimization
+\end{itemize}
+
+The dataset was split into:
+\begin{itemize}
+    \item 70\% training queries
+    \item 30\% testing queries
+\end{itemize}
+
+to avoid evaluating on training data and reduce overfitting.
+
+\textbf{Evaluation Results:}
+
+The following table summarizes the performance of the LTR system on the Cranfield dataset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+k & Precision & Recall & F-score & MAP & nDCG & MRR \\
+\hline
+1 & 0.6618 & 0.1007 & 0.2911 & 0.6618 & 0.4301 & 0.6618 \\
+2 & 0.5441 & 0.1708 & 0.3501 & 0.7059 & 0.3861 & 0.7059 \\
+3 & 0.5049 & 0.2348 & 0.3804 & 0.7206 & 0.3777 & 0.7353 \\
+4 & 0.4596 & 0.2776 & 0.3796 & 0.7157 & 0.3734 & 0.7426 \\
+5 & 0.4176 & 0.3112 & 0.3680 & 0.6995 & 0.3711 & 0.7485 \\
+6 & 0.3750 & 0.3251 & 0.3436 & 0.6965 & 0.3676 & 0.7534 \\
+7 & 0.3466 & 0.3460 & 0.3290 & 0.6867 & 0.3699 & 0.7576 \\
+8 & 0.3235 & 0.3675 & 0.3161 & 0.6871 & 0.3714 & 0.7595 \\
+9 & 0.3023 & 0.3877 & 0.3025 & 0.6801 & 0.3759 & 0.7595 \\
+10 & 0.2824 & 0.3974 & 0.2873 & 0.6753 & 0.3771 & 0.7595 \\
+\hline
+\end{tabular}
+\caption{Evaluation Metrics for LTR Model on Cranfield Dataset}
+\end{table}
+
+The plot below illustrates the behavior of these metrics as $k$ increases:
+
+
+\textbf{Comparative Analysis with Baseline VSM:}
+
+Compared to the baseline TF-IDF Vector Space Model, the LTR framework showed:
+\begin{itemize}
+    \item Slight improvements in MAP
+    \item Improved nDCG across most ranks
+    \item Slightly improved MRR
+    \item Comparable Precision and Recall
+\end{itemize}
+
+For example:
+\begin{itemize}
+    \item VSM achieved Precision@1 = 0.6667
+    \item LTR achieved Precision@1 = 0.6618
+\end{itemize}
+
+However:
+\begin{itemize}
+    \item LTR achieved consistently higher nDCG and MRR values across most ranks.
+\end{itemize}
+
+This suggests that the LTR model was somewhat better at ordering relevant documents within the ranked list, even if the very first retrieved document was not always superior to the baseline VSM result.
+
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+The experimental results partially support the proposed hypothesis. While the Learning-to-Rank framework did not significantly outperform the baseline TF-IDF Vector Space Model in terms of Precision@k, it consistently achieved higher MAP, nDCG, and MRR values across multiple ranks. This indicates that the LTR model was more effective at ranking relevant documents higher within the retrieved list, even though the top-ranked document was not always better than the VSM baseline.
+
+Several factors likely contributed to the relatively modest improvement observed.
+
+\begin{enumerate}
+    \item \textbf{Limited Dataset Size}
+
+    Learning-to-Rank models typically require large-scale training data to effectively learn robust ranking patterns. The Cranfield dataset contains only around 225 queries and 1400 documents, which is relatively small for supervised ranking approaches. As a result, the model may not have observed enough diverse relevance patterns to generalize effectively.
+
+    \item \textbf{Strong Lexical Nature of the Dataset}
+
+    The Cranfield corpus consists of highly technical aeronautical engineering abstracts containing precise scientific terminology. In such domains, exact lexical matching already performs extremely well because relevant documents often contain the exact query terms. Consequently, the TF-IDF baseline itself is already highly competitive.
+
+    This reduces the potential gains achievable through supervised ranking.
+
+    \item \textbf{Limited Learning Signals}
+
+    The LTR framework learns only from the available query-document relevance judgments and lexical overlap patterns. Unlike semantic retrieval systems, it does not incorporate contextual embeddings or deep semantic understanding.
+
+    As a result, the model primarily learns refined lexical ranking behavior rather than fundamentally different semantic representations.
+
+    \item \textbf{Overfitting Risk}
+
+    Because the number of training queries is relatively small, the ranking model may partially overfit to the training query distribution. This can reduce generalization performance on unseen test queries.
+\end{enumerate}
+
+\textbf{Conclusion:}
+\begin{itemize}
+\item The Learning-to-Rank framework demonstrated that supervised ranking methods can modestly improve ranking-quality-oriented metrics such as MAP, nDCG, and MRR by learning ranking behavior directly from relevance judgments. However, the gains over the baseline TF-IDF Vector Space Model remained relatively limited on the Cranfield dataset.
+
+\item These findings suggest that for small-scale, highly specialized technical corpora, classical lexical retrieval methods remain highly competitive. Since the dataset heavily relies on exact technical terminology, supervised ranking models provide only incremental improvements unless richer semantic representations or significantly larger training datasets are available.
+\end{itemize}
+\subsubsection{Approach 10: Learning-to-Rank with BM25-based Lexical Features}
+
+To further improve the retrieval effectiveness of the baseline TF-IDF Vector Space Model (VSM) and the earlier Learning-to-Rank (LTR) framework, we implemented an enhanced Learning-to-Rank system using BM25-derived lexical relevance features. Unlike the earlier LTR model, which primarily relied on general supervised ranking behavior, this approach explicitly incorporated multiple handcrafted lexical relevance signals inspired by probabilistic Information Retrieval models.
+
+The motivation behind this approach was the observation that traditional cosine similarity-based retrieval does not adequately capture several important retrieval characteristics such as:
+\begin{itemize}
+    \item term frequency saturation,
+    \item document length normalization,
+    \item query term coverage,
+    \item and varying importance of query terms within documents.
+\end{itemize}
+
+BM25-based lexical features are specifically designed to address these limitations. By combining these features within a supervised Learning-to-Rank framework, we hypothesized that the ranking model would learn stronger relevance patterns than either standalone VSM retrieval or the earlier generic LTR model.
+
+\textbf{Hypothesis:} A Learning-to-Rank framework using BM25-based lexical relevance features outperforms the baseline TF-IDF Vector Space Model on the task of document ranking over the Cranfield dataset under the assumption that probabilistic lexical relevance signals better capture document-query relevance relationships than cosine similarity alone, as measured using Precision, MAP, nDCG, and MRR evaluation metrics.
+
+In particular, we hypothesized that:
+\begin{itemize}
+    \item BM25-based scoring would provide stronger lexical relevance estimation than TF-IDF cosine similarity.
+    \item Query coverage and query frequency signals would improve discrimination between partially relevant and highly relevant documents.
+    \item Combining multiple lexical relevance features within a supervised ranking framework would improve ranking quality metrics.
+\end{itemize}
+
+\textbf{Feature Engineering:}
+
+For each query-document pair, we extracted five lexical relevance features.
+
+\begin{enumerate}
+    \item \textbf{BM25 Score}
+
+\[
+BM25(D,Q)=\sum_{t\in Q} IDF(t)\cdot
+\frac{f(t,D)(k_1+1)}
+{f(t,D)+k_1\left(1-b+b\frac{|D|}{avgdl}\right)}
+\]
+
+where:
+\begin{itemize}
+    \item \(f(t,D)\) is the frequency of term \(t\) in document \(D\),
+    \item \(|D|\) is the document length,
+    \item \(avgdl\) is the average document length,
+    \item \(k_1\) and \(b\) are BM25 hyperparameters.
+\end{itemize}
+
+This feature models probabilistic relevance while accounting for document verbosity and diminishing returns from repeated term occurrences.
+
+    \item \textbf{Query Term Coverage}
+
+\[
+Coverage(Q,D)=\frac{|Q\cap D|}{|Q|}
+\]
+
+This acts as a recall-oriented signal and rewards documents that cover a larger portion of the query.
+
+    \item \textbf{Term Frequency Match Strength}
+
+\[
+TF_{sum}(Q,D)=\sum_{t\in Q} f(t,D)
+\]
+
+This feature captures how strongly the document emphasizes the query terms.
+
+    \item \textbf{Normalized Document Length}
+
+\[
+NormLen(D)=\frac{|D|}{avgdl}
+\]
+
+This allows the ranking model to learn whether longer or shorter documents are preferable.
+
+    \item \textbf{Query Frequency Signal}
+
+This feature measures the total occurrences of query terms within the document and acts as an additional importance signal.
+\end{enumerate}
+
+\textbf{Learning Framework:}
+
+We used the LambdaMART ranking algorithm implemented using LightGBM’s ranking framework. LambdaMART is a gradient-boosted decision tree model optimized directly for ranking metrics such as nDCG.
+
+The model was trained using:
+\begin{itemize}
+    \item BM25-derived lexical relevance features
+    \item Query-document relevance judgments from Cranfield qrels
+    \item Grouped ranking batches per query
+    \item Pairwise ranking optimization
+\end{itemize}
+
+The dataset was split into:
+\begin{itemize}
+    \item 70\% training queries
+    \item 30\% testing queries
+\end{itemize}
+
+to avoid evaluating on training data and reduce overfitting.
+
+\textbf{Evaluation Results:}
+
+The following table summarizes the performance of the LTR + BM25 feature model on the Cranfield dataset.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+k & Precision & Recall & F-score & MAP & nDCG & MRR \\
+\hline
+1 & 0.6029 & 0.0884 & 0.2596 & 0.6029 & 0.3419 & 0.6029 \\
+2 & 0.5294 & 0.1655 & 0.3422 & 0.6618 & 0.3499 & 0.6618 \\
+3 & 0.4461 & 0.2038 & 0.3383 & 0.6752 & 0.3203 & 0.6814 \\
+4 & 0.3934 & 0.2369 & 0.3265 & 0.6626 & 0.3086 & 0.6814 \\
+5 & 0.3559 & 0.2641 & 0.3153 & 0.6587 & 0.3065 & 0.6873 \\
+6 & 0.3186 & 0.2830 & 0.2960 & 0.6481 & 0.3015 & 0.6873 \\
+7 & 0.2983 & 0.3076 & 0.2868 & 0.6374 & 0.3056 & 0.6915 \\
+8 & 0.2904 & 0.3437 & 0.2866 & 0.6052 & 0.3182 & 0.6915 \\
+9 & 0.2778 & 0.3656 & 0.2804 & 0.6024 & 0.3261 & 0.6947 \\
+10 & 0.2632 & 0.3823 & 0.2708 & 0.5925 & 0.3308 & 0.6947 \\
+\hline
+\end{tabular}
+\caption{Evaluation Metrics for LTR + BM25 Feature Model on Cranfield Dataset}
+\end{table}
+
+The plot below illustrates the behavior of these metrics as $k$ increases:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{eval_plot.png}
+    \caption{Trend of IR Metrics for LTR+BM25 approach}
+    \label{fig:placeholder}
+\end{figure}
+
+\textbf{Comparative Analysis with Baseline VSM:}
+
+Compared to the baseline TF-IDF Vector Space Model:
+\begin{itemize}
+    \item Precision decreased across most ranks
+    \item Recall was slightly lower
+    \item MAP values were lower than the baseline
+    \item nDCG values were also lower
+    \item MRR showed a noticeable decline
+\end{itemize}
+
+For example:
+\begin{itemize}
+    \item VSM achieved Precision@1 = 0.6667
+    \item LTR + BM25 Features achieved Precision@1 = 0.6029
+\end{itemize}
+
+Similarly:
+\begin{itemize}
+    \item VSM achieved nDCG@10 = 0.3620
+    \item LTR + BM25 Features achieved nDCG@10 = 0.3308
+\end{itemize}
+
+Thus, despite introducing more sophisticated lexical relevance signals, the enhanced LTR framework did not outperform the simpler TF-IDF baseline.
+
+\textbf{Analysis of Results and Hypothesis Evaluation:}
+
+The experimental results did not support the proposed hypothesis. Although BM25-derived features are theoretically stronger lexical relevance signals than raw TF-IDF cosine similarity, the supervised ranking framework failed to translate these features into improved retrieval effectiveness on the Cranfield dataset.
+
+Several factors likely contributed to this outcome.
+
+\begin{enumerate}
+    \item \textbf{Feature Redundancy}
+
+    Many of the engineered features are strongly correlated with one another. For example:
+    \begin{itemize}
+        \item BM25 score,
+        \item query frequency,
+        \item and term-frequency match strength
+    \end{itemize}
+
+    all depend heavily on query term occurrence statistics.
+
+    As a result, the ranking model may not have received sufficiently diverse learning signals to significantly improve ranking quality.
+
+    \item \textbf{Small Dataset Size}
+
+    Learning-to-Rank systems generally require large amounts of training data to learn reliable feature interactions. The Cranfield dataset contains relatively few queries and relevance judgments compared to modern ranking benchmarks.
+
+    Consequently, the model may not have had enough data to effectively learn robust ranking patterns from the engineered features.
+
+    \item \textbf{Strong Baseline Performance}
+
+    The baseline TF-IDF Vector Space Model already performs strongly on the Cranfield corpus because the dataset consists of highly technical aeronautical abstracts containing precise terminology. Exact lexical overlap is therefore already highly informative.
+
+    In such settings, additional lexical engineering often produces only marginal gains.
+
+    \item \textbf{Overfitting to Training Queries}
+
+    Because the model was trained on a relatively small set of queries, it may have partially overfit to training query distributions. The engineered features could therefore generalize poorly to unseen test queries.
+
+    \item \textbf{Lack of Semantic Features}
+
+    Although the feature set included multiple lexical relevance signals, the model still relied entirely on surface-level term statistics. It did not incorporate:
+    \begin{itemize}
+        \item semantic embeddings,
+        \item contextual representations,
+        \item synonym handling,
+        \item or deeper language understanding.
+    \end{itemize}
+
+    Thus, the system remained fundamentally lexical in nature.
+\end{enumerate}
+
+\textbf{Conclusion:}
+\begin{itemize}
+\item The Learning-to-Rank framework using BM25-based lexical features demonstrated that adding handcrafted probabilistic relevance signals alone does not necessarily guarantee improved retrieval effectiveness over a strong TF-IDF baseline.
+
+\item While BM25-derived features theoretically provide more sophisticated relevance estimation, the experimental results showed lower Precision, MAP, nDCG, and MRR values compared to the baseline Vector Space Model on the Cranfield dataset.
+
+\item These findings suggest that in small-scale, domain-specific technical corpora, classical TF-IDF retrieval remains highly competitive due to the importance of exact technical terminology and limited semantic ambiguity.
+\end{itemize}
+
+
+\end{document}

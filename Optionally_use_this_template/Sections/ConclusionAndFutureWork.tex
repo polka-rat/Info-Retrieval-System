@@ -1,1 +1,14 @@
-\section{Conclusion}\label{sec:conclusion}
+\section{Conclusion and Future Work}\label{sec:conclusion}
+
+This report now follows the \texttt{Main.tex} template while preserving the key material from the original \texttt{custom.tex}: the manual Part 1 walkthrough, the Part 3 evaluation tables and observations, the Part 4 analytical discussion of VSM limitations, and the project-level comparison of multiple retrieval extensions.
+
+Across the project methods, no single approach dominated on every metric. However, the experiments clearly show that on a small, technical corpus like Cranfield, strong lexical retrieval remains hard to beat. BM25+ and Statistical Language Modeling produced some of the strongest improvements because they refined lexical relevance rather than discarding it.
+
+Future work could improve the system along several directions:
+\begin{itemize}
+    \item better handling of hyphenated technical phrases and domain-specific tokenization,
+    \item domain-adapted semantic embeddings rather than generic pretrained vectors,
+    \item query expansion using aeronautical terminology resources,
+    \item reranking models fine-tuned on technical relevance judgments,
+    \item and larger supervised ranking datasets for more reliable Learning-to-Rank training.
+\end{itemize}

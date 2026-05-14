@@ -1,1 +1,21 @@
 \section{Experimentation}\label{sec:exp}
+
+All systems were evaluated on the Cranfield dataset using a shared preprocessing pipeline consisting of sentence segmentation, tokenization, inflection reduction, and stopword removal. For every retrieval model, documents were ranked against the full collection and evaluated at multiple cutoff values $k \in \{1,\dots,10\}$.
+
+The evaluation metrics used throughout the experiments were:
+\begin{itemize}
+    \item Precision@k,
+    \item Recall@k,
+    \item F-score@k,
+    \item Mean Average Precision (MAP),
+    \item normalized Discounted Cumulative Gain (nDCG),
+    \item and Mean Reciprocal Rank (MRR).
+\end{itemize}
+
+The detailed metric tables for each explored method are included in the Approach section because each experimental setting was closely tied to its own modeling assumptions and analysis. This preserves the bulk of the original project write-up from \texttt{custom.tex} while allowing the final report to follow the \texttt{Main.tex} section structure.
+
+From the experiments, two patterns were especially consistent:
+\begin{enumerate}
+    \item methods that preserved strong lexical matching remained highly competitive on the Cranfield dataset,
+    \item more semantic or learned approaches only helped when their added modeling power aligned with the scale and vocabulary of the corpus.
+\end{enumerate}

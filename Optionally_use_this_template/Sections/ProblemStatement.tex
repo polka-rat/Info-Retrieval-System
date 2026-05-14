@@ -1,1 +1,81 @@
 \section{Problem Statement}\label{sec:prob_stat}
+
+The assignment moves from a small hand-worked retrieval example to a full-scale Information Retrieval system over the Cranfield collection. The main tasks are:
+\begin{itemize}
+    \item build and extend a working IR system,
+    \item evaluate retrieval quality using standard ranking metrics,
+    \item analyze the limitations of the baseline Vector Space Model,
+    \item and explore project-level retrieval improvements beyond basic TF-IDF.
+\end{itemize}
+
+\subsection{Part 2: Building and Extending an IR System}
+In this stage, the goal is to move from the manual TF-IDF reasoning of Part 1 to an implemented IR pipeline that supports preprocessing, indexing, ranking, and extensible retrieval strategies on the Cranfield dataset.
+
+\subsection{Part 3: Evaluating your IR System}
+
+\subsubsection{Implementation}
+code
+
+\textbf{Reported Values:}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Metric} & \textbf{Value @ k=10} \\
+\hline
+Precision@10 & 0.2831 \\
+Recall@10 & 0.4095 \\
+F$_{0.5}$-score@10 & 0.2887 \\
+AP@10 & 0.6586 \\
+nDCG@10 & 0.3620 \\
+\hline
+\end{tabular}
+\caption{Evaluation Metrics at $k=10$}
+\end{table}
+
+\subsubsection{MAP and MRR}
+
+\subsubsection{Plotting evaluation metrics as a function of k}
+\begin{table}[H]
+\centering
+\caption{Evaluation Metrics on Cranfield Dataset}
+\begin{tabular}{c|c c c|c c c}
+\hline
+k & Precision & Recall & F-score & MAP & nDCG & MRR \\
+\hline
+1  & 0.6667 & 0.1115 & 0.3088 & 0.6667 & 0.3637 & 0.6667 \\
+2  & 0.5556 & 0.1811 & 0.3617 & 0.7133 & 0.3506 & 0.7133 \\
+3  & 0.5067 & 0.2405 & 0.3840 & 0.7222 & 0.3535 & 0.7356 \\
+4  & 0.4478 & 0.2750 & 0.3703 & 0.7146 & 0.3506 & 0.7422 \\
+5  & 0.3956 & 0.2978 & 0.3473 & 0.7085 & 0.3436 & 0.7467 \\
+6  & 0.3644 & 0.3283 & 0.3364 & 0.6996 & 0.3455 & 0.7519 \\
+7  & 0.3390 & 0.3505 & 0.3230 & 0.6858 & 0.3492 & 0.7519 \\
+8  & 0.3189 & 0.3740 & 0.3121 & 0.6754 & 0.3542 & 0.7524 \\
+9  & 0.3017 & 0.3974 & 0.3024 & 0.6639 & 0.3593 & 0.7539 \\
+10 & 0.2831 & 0.4095 & 0.2887 & 0.6586 & 0.3620 & 0.7539 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \IfFileExists{eval_plot_ir.png}
+        {\includegraphics[width=0.5\linewidth]{eval_plot_ir.png}}
+        {\fbox{\parbox{0.45\linewidth}{\centering Placeholder for \texttt{eval\_plot\_ir.png}}}}
+    \caption{Trends of IR metrics}
+    \label{fig:baseline_metrics}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Precision decreases as $k$ increases:} Precision is highest at lower ranks and gradually decreases as more documents are retrieved. This behavior is expected in most IR systems because the top-ranked documents are generally the most relevant, while lower-ranked documents tend to include more irrelevant results. The sharp drop from approximately 0.67 at $k=1$ to around 0.28 at $k=10$ indicates that the system is effective at identifying highly relevant documents early in the ranking.
+\item \textbf{Recall steadily increases with larger $k$:} Recall improves consistently as $k$ increases because more relevant documents are retrieved when additional documents are considered. The increase from roughly 0.11 at $k=1$ to over 0.40 at $k=10$ demonstrates the expected trade-off between precision and recall in ranked retrieval systems.
+\item \textbf{F-score peaks at intermediate ranks:} The F-score initially increases and reaches its highest value around $k=3$ or $k=4$, after which it gradually declines. This suggests that the retrieval system achieves the best balance between precision and recall at moderate retrieval depths. Beyond this point, the decline in precision outweighs the gains in recall.
+\item \textbf{MAP remains consistently high:} The Mean Average Precision (MAP) curve stays relatively stable and high across all values of $k$, remaining above approximately 0.66 throughout the evaluation. This indicates that relevant documents are generally ranked near the top of the retrieved list, which reflects strong ranking quality.
+\item \textbf{nDCG remains stable across retrieval depths:} The nDCG values show only minor variation as $k$ increases. This suggests that the system preserves good ranking order even when additional documents are retrieved. Since nDCG accounts for the positions of relevant documents, the stable trend indicates that highly relevant documents continue to appear near the top ranks.
+\item \textbf{MRR is consistently high:} The Mean Reciprocal Rank (MRR) curve remains very high and nearly constant across all values of $k$. This implies that the first relevant document is usually retrieved at very early ranks, often near the top position. Such behavior is particularly desirable in search systems where users typically focus on the first few retrieved documents.
+\end{itemize}
+
+The combined behavior of MAP, nDCG, and MRR indicates that the retrieval system is especially effective at early precision and top-ranked relevance. Even though precision decreases at higher $k$, the ranking quality remains strong because the most relevant documents are consistently prioritized near the beginning of the ranked list.
+
+\subsubsection{Run time}
+Total Runtime: 8.08431100845337 seconds
