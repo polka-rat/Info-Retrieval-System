@@ -73,6 +73,7 @@ nltk.download('wordnet')
 
 ```
 python main.py -dataset cranfield/ -out_folder output/
+
 ```
 
 This will:
@@ -89,6 +90,28 @@ This will:
 * Save evaluation plots as `eval_plot.png`
 
 ---
+To run custom retrievers:
+```
+python main.py -retriever ${retriever} -dataset cranfield -out_folder output
+```
+
+Available retrievers:
+* **bm25** - BM25 ranking algorithm (probabilistic relevance framework)
+* **bm25_plus** - BM25+ variant with delta parameter for improved ranking
+* **bm25_reranker** - Two-stage retrieval: BM25+ with neural reranking using CrossEncoder
+* **query_expansion** - Query Expansion (QE-LSA): TF-IDF + LSA-based term expansion for richer queries
+* **lsa** - Latent Semantic Analysis with dimensionality reduction
+* **ngram** - N-gram based token sequence matching
+* **lsa_synset** - LSA combined with WordNet synsets for semantic understanding
+* **sdmlsa_hybrid** - Hybrid approach combining multiple retrieval methods
+* **sentence_wise** - Sentence-wise retrieval using Word2Vec embeddings and document centroids
+
+Examples:
+```
+python main.py -retriever bm25_plus -dataset cranfield -out_folder output
+python main.py -retriever bm25_reranker -dataset cranfield -out_folder output
+python main.py -retriever query_expansion -dataset cranfield -out_folder output
+```
 
 ####  2. Run in Custom Query Mode
 

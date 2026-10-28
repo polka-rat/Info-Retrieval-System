@@ -50,6 +50,21 @@ class SearchEngine:
                 "module": "info_retrieval_bm_25",
                 "kwargs": {"retrieval_mode": "bm25"},
             },
+            "bm25_plus": {
+                "module": "info_retrieval_BM25_plus",
+                "kwargs": {},
+            },
+            "bm25_reranker": {
+                "module": "info_retrieval_BM25_reranker",
+                "kwargs": {},
+            },
+            "query_expansion": {
+                "module": "info_retrieval_queryexpansion",
+                "kwargs": {
+                    "k": self.args.lsa_k,
+                    "lsa_components": self.args.lsa_k,
+                },
+            },
             "lsa": {
                 "module": "info_retreieval_LSA",
                 "kwargs": {"k": self.args.lsa_k},
@@ -308,7 +323,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '-retriever',
         default="bm25",
-        choices=["ngram", "bm25", "lsa", "lsa_synset", "sdmlsa", "sentence_wise"]
+        choices=["ngram", "bm25", "bm25_plus", "bm25_reranker", "query_expansion", "lsa", "lsa_synset", "sdmlsa", "sentence_wise"]
     )
     parser.add_argument('-ngram_n', type=int, default=2)
     parser.add_argument('-lsa_k', type=int, default=100)
